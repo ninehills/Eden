@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-""" ``peader.db`` is a simple mysql dabtabase module, current it supports the featues as below::
+""" ``eden.db`` is a simple mysql dabtabase module, current it supports the featues as below::
 
     # set multiple dabtabases
     # a thread safe connection pool
@@ -25,6 +25,7 @@ import MySQLdb.cursors
 import time
 import logging
 
+from random import choice
 
 LOGGER = logging.getLogger('peader.db')
 
@@ -36,11 +37,16 @@ LOGGER = logging.getLogger('peader.db')
 #   PRIMARY KEY (`uid`)
 # )
 
+def database(key='default'):
+    # it will return the connection pool in connnections
+    if key.endswith('.slave'):
+        return choice(__connections[key])
+    return __connections.get(key)
 
 __connections = {}
 
 
-def setup(host, user, password, db, max_idle=10, pool_opt=None, port=3306, key='default'):
+def setup(host, user, password, db, max_idle=10, pool_opt=None, port=3306, key='default', slave=False):
     db_options = dict(
         host=host,
         user=user,
@@ -48,14 +54,39 @@ def setup(host, user, password, db, max_idle=10, pool_opt=None, port=3306, key='
         db=db,
         port=port
     )
+    if '.' in key:
+        raise TypeError('The DB Key: "%s" Can\'t Contains dot' %(key))
+
+    if slave == False and key in __connections:
+        raise DBError('The Key: "%s" was set' %(key))
+
+    if key not in __connections and slave:
+        raise DBError('Should set master firstly for : "%s"' %(key))
 
     if pool_opt:
-        __connections[key] = ThreadSafeConnectionPool(pool_opt.get('minconn', 5),
+        con = ConnectionPool(pool_opt.get('minconn', 5),
                             pool_opt.get('maxconn', 10),
                             max_idle, db_options)
     else:
         LOGGER.info('setup adpater to Connection')
-        __connections[key] = Connection(max_idle, db_options)
+        con = Connection(max_idle, db_options)
+
+    master_key = key
+    key = key + '.slave'
+    if not slave:
+        __connections[master_key] = con
+        if key not in __connections:
+            __connections[key] = [con]
+    else:  
+        if key in __connections:
+            conns = __connections[key]
+            if len(conns) == 1 and __connections[master_key] == conns[0]:
+                __connections[key] = [con]
+            else:
+                __connections[key].append(con)
+        else:
+            __connections[key] = [con]
+
 
 
 class DBError(Exception):
@@ -78,7 +109,6 @@ def query_one(sql, args=None, key='default'):
     except IndexError:
         return None
 
-
 def query(sql, args=None, many=None, key='default'):
     """The connection raw sql query,  when select table,  show table
         to fetch records, it is compatible the dbi execute method::
@@ -90,6 +120,7 @@ def query(sql, args=None, many=None, key='default'):
     many maybe int: whe set, the query method will return genarate an iterate
     key: a key for your dabtabase you wanna use
     """
+    pool = choice(__connections[key+'.slave'])
     con = None
     c = None
 
@@ -102,10 +133,10 @@ def query(sql, args=None, many=None, key='default'):
                 result = c.fetchmany(many)
         finally:
             c and c.close()
-            con and __connections[key].putcon(con)
+            con and pool.push(con)
 
     try:
-        con = __connections[key].getcon()
+        con = pool.pop()
         c = con.get_cursor()
         LOGGER.debug("sql: " + sql + " args:" + str(args))
         c.execute(sql, args)
@@ -120,7 +151,7 @@ def query(sql, args=None, many=None, key='default'):
     finally:
 
         many or (c and c.close())
-        many or (con and __connections[key].putcon(con))
+        many or (con and pool.push(con))
 
 
 def execute(sql, args=None, key='default'):
@@ -136,7 +167,7 @@ def execute(sql, args=None, key='default'):
     con = None
     c = None
     try:
-        con = __connections[key].getcon()
+        con = __connections[key].pop()
         c = con.get_cursor()
         LOGGER.debug("execute sql: " + sql + " args:" + str(args))
         if type(args) is tuple:
@@ -157,7 +188,7 @@ def execute(sql, args=None, key='default'):
 
     finally:
         c and c.close()
-        con and __connections[key].putcon(con)
+        con and __connections[key].push(con)
 
 
 class Connection(object):
@@ -208,10 +239,10 @@ class Connection(object):
             self.connect()
         self._last_used = time.time()
 
-    def getcon(self):
+    def pop(self):
         return self
 
-    def putcon(self, c):
+    def push(self, c):
         pass
 
     def get_cursor(self, ctype=MySQLdb.cursors.Cursor):
@@ -230,10 +261,10 @@ class BaseConnectionPool(object):
     def new_connect(self):
         return Connection(self.max_idle, self.db_options)
 
-    def putcon(self, con):
+    def push(self, con):
         pass
 
-    def getcon(self):
+    def pop(self):
         pass
 
     def close_all(self):
@@ -241,7 +272,7 @@ class BaseConnectionPool(object):
 
 import threading
 
-class ThreadSafeConnectionPool(BaseConnectionPool):
+class ConnectionPool(BaseConnectionPool):
 
     def __init__(self, minconn=3, maxconn=10, max_idle=5, db_options={}):
         self._created_conns = 0
@@ -254,7 +285,7 @@ class ThreadSafeConnectionPool(BaseConnectionPool):
         for i in range(self.minconn):
             self._available_conns.append(self.new_connect())
 
-    def getcon(self):
+    def pop(self):
         con = None
         first_tried = time.time()
         while True:
@@ -263,7 +294,7 @@ class ThreadSafeConnectionPool(BaseConnectionPool):
                 con = self._available_conns.pop(0)
                 self._in_use_conns.append(con)
                 break
-            except:
+            except IndexError:
 
                 if self._created_conns < self.maxconn:
 
@@ -279,7 +310,7 @@ class ThreadSafeConnectionPool(BaseConnectionPool):
 
         return con
 
-    def putcon(self, con):
+    def push(self, con):
         self._lock.acquire()
         if con in self._in_use_conns:
             self._in_use_conns.remove(con)
