@@ -26,13 +26,11 @@ class Schedule(object):
         self.thread = None
 
     def run(self):
-
         LOGGER.debug('Starting schedule ....')
         LOGGER.debug('master thread : %d', get_ident())
         self.ready = True
-
         # self.threadpool.start()
-
+        
         while self.ready:
             try:
                 jobs = self.claim()
@@ -88,39 +86,14 @@ class ThreadPool(object):
         self._idle_threads = []
 
     def start(self):
-
         for i in range(self.min):
             with self._lock:
                 self._created += 1
                 thread = self._new_thread()
                 self._idle_threads.append(thread)
 
-    def stop(self, timeout=5):
-        # Must shut down threads here so the code that calls
-        # this method can know when all threads are stopped.
-
-        #time.sleep(1)
-        endtime = int(time.time() + timeout)
-        while True:
-            time.sleep(1)
-            with self._lock:
-                if self._in_use_threads or self._idle_threads:
-                    LOGGER.info('_idle_threads')
-                    while self._idle_threads:
-                        worker = self._idle_threads.pop(0)
-                        worker.current_job = _SHUTDOWNJOB
-                        worker.resume()
-                        #worker.event.clear()
-                else: 
-                    break
-            LOGGER.info('clear')
-        LOGGER.info('stoped!!!!!!!')
-                
-
-
     def push(self, thread):
         with self._lock:
-            LOGGER.debug('Push thread : %s', thread)
             if thread in self._in_use_threads:
                 del self._in_use_threads[thread]
             self._idle_threads.append(thread)
@@ -141,14 +114,31 @@ class ThreadPool(object):
             self._lock.release()
 
             if not thread and 3 <= (time.time() - first_tried):
-                raise ThreadPoolError(
-                    "tried 3 sethreadds, can't load thread, maybe too many jobs")
+                raise ThreadPoolError("tried 3 sethreadds, can't load thread, maybe too many jobs")
 
             return thread
 
     def _new_thread(self):
         return WorkerThread(self.schedule, self)
 
+    def stop(self, timeout=5):
+        # Must shut down threads here so the code that calls
+        # this method can know when all threads are stopped.
+
+        #time.sleep(1)
+        endtime = int(time.time() + timeout)
+        while True:
+            time.sleep(1)
+            with self._lock:
+                if self._in_use_threads or self._idle_threads:
+                    LOGGER.info('_idle_threads')
+                    while self._idle_threads:
+                        worker = self._idle_threads.pop(0)
+                        worker.current_job = _SHUTDOWNJOB
+                        worker.resume()
+                        #worker.event.clear()
+                else: 
+                    break
 
 class ThreadPoolError(Exception):
     pass
@@ -166,17 +156,14 @@ class WorkerThread(threading.Thread):
         self.start()
 
     def suspend(self):
-        LOGGER.debug('suspend thread : %d', get_ident())
         self.event.clear()
         self.event.wait()
 
     def resume(self):
-        LOGGER.info('resume thread : %s', self)
         self.event.set()
 
     def run(self):
         self.ready = True
-
         LOGGER.debug('Starting thread %d', get_ident())
         while self.ready:
             if self.current_job == _SHUTDOWNJOB:
@@ -184,14 +171,12 @@ class WorkerThread(threading.Thread):
                 self.ready = False
                 break
             self.suspend()
-            LOGGER.info('do job')
             try:
                 if self.current_job:
                     self.schedule.app(**self.current_job)
             finally:
                 self.current_job = None
                 self.pool.push(self)
-        LOGGER.info('clear event')
         self.event.clear()
 
 
