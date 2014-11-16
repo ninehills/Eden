@@ -123,7 +123,7 @@ class _CrontabPattern(object):
 _ParsedSpec = namedtuple('_ParsedSpec', 'minute hour dom month dow')
 
 
-class Job(object):
+class Task(object):
 
     GEN_NEXT_RUNS = {
         'at': _AtPattern(),
@@ -131,9 +131,9 @@ class Job(object):
         'cron':  _CrontabPattern()
     }
 
-    def __init__(self, cron_id, job_id, name, event, next_run=None, last_run=None):
+    def __init__(self, cron_id, task_id, name, event, next_run=None, last_run=None):
         self.cron_id = cron_id
-        self.job_id = job_id
+        self.task_id = task_id
         self.name = name
         self.event = event
         self.last_run = last_run
@@ -168,7 +168,7 @@ class Job(object):
         return self.__dict__.copy()
 
     def __str__(self):
-        return '<Job name:%s, next_run:%s, last_run:%s, crontab:%s>' % (self.name, self.next_run, self.last_run, self.event)
+        return '<Task name:%s, next_run:%s, last_run:%s, crontab:%s>' % (self.name, self.next_run, self.last_run, self.event)
     __repr__ = __str__
 
     def _pattern(self, event):
@@ -180,7 +180,7 @@ class Job(object):
         return pattern
 
     def fresh(self):
-        self.job_id = None
+        self.task_id = None
         self.next_run = self.gen_next_run()
         self.last_run = datetime.now()
 
