@@ -125,24 +125,44 @@ _ParsedSpec = namedtuple('_ParsedSpec', 'minute hour dom month dow')
 
 class Task(object):
 
+    NEW = 0
+    SCHEDULED = 1
+    RUNNING = 2
+    RETRY = 3
+    ERROR = 4
+    
+    COMPLETED = 5
+    STOP  = 6
+    ABORTED = 7
+
+    ATTEMPT_LIMIT = 5
+
     GEN_NEXT_RUNS = {
         'at': _AtPattern(),
         'every': _EveryPattern(),
         'cron':  _CrontabPattern()
     }
 
-    def __init__(self, cron_id, task_id, name, event, next_run=None, last_run=None):
+    def __init__(self, cron_id, task_id, name, action, data, event, 
+        next_run=None, last_run=None, attempts=0, status=NEW, last_five_logs=None):
         self.cron_id = cron_id
         self.task_id = task_id
         self.name = name
+        self.action = action 
+        self.data = data
         self.event = event
         self.last_run = last_run
+
         if not next_run:
             if self.validate_event():
                 next_run = self.gen_next_run()
             else:
                 raise TypeError('The event "%s" is invalid' %(event))
         self.next_run = next_run
+
+        self.attempts = attempts
+        self.status = status    
+        self.last_five_logs = last_five_logs or []
 
     def validate_event(self):
         pat = self.GEN_NEXT_RUNS.get(self.pattern[0])
@@ -180,9 +200,23 @@ class Task(object):
         return pattern
 
     def fresh(self):
+        if self._pattern[0] in ('at' or 'loop'):
+            return False
         self.task_id = None
         self.next_run = self.gen_next_run()
         self.last_run = datetime.now()
+        self.attempts = 0
+        self.status = self.SCHEDULED
+        return True
+
+    def retry(self):
+        if self.attempts < self.ATTEMPT_LIMIT:
+            self.attempts += 1
+            self.status = self.RETRY
+            self.next_run = datetime.now()
+            self.last_run = datetime.now()
+            return True
+        return False
 
     def gen_next_run(self):
         return self.GEN_NEXT_RUNS[self.pattern[0]].gen_next_run(self.pattern[1])

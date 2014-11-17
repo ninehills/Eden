@@ -7,7 +7,7 @@ import unittest
 class TaskTest(unittest.TestCase):
 
     def test_new(self):
-        task = Task(1, 'task_id', 'name', 'every 5')
+        task = Task(1, 'task_id', 'name', 'job.test', {'args':(), 'kw':{}}, 'every 5')
         self.assertEquals((task.name, task.event), ('name', 'every 5'))
         self.assertEquals(task.pattern, ['every', '5'])
 
@@ -16,14 +16,14 @@ class TaskTest(unittest.TestCase):
         self.assertRaises(TypeError, lambda: task(1, 'task_id', 'name', 'at xx'))
 
     def test_gen_next_run(self):
-        task = Task(1, 'task_id', 'name', 'every 5', datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"), 
+        task = Task(1, 'task_id', 'name', 'job.test',  {'args':(), 'kw':{}}, 'every 5', datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"), 
             datetime.strptime("8/8/2014 16:30", "%d/%m/%Y %H:%M"))
         self.assertEqual(task.next_run, datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"))
         self.assertTrue(task.gen_next_run() > datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"))
 
     def test_event_type(self):
         t = datetime.now() + timedelta(minutes=5)
-        task = Task(1, 'task_id', 'name', 'at ' + t.strftime('%Y%m%d%H%M'))
+        task = Task(1, 'task_id', 'name', 'job.test',  {'args':(), 'kw':{}}, 'at ' + t.strftime('%Y%m%d%H%M'))
         self.assertEqual(task.event_type, 'at')
         task.event = 'every 5'
         self.assertEqual(task.event_type, 'every')
