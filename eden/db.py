@@ -124,24 +124,13 @@ def query(sql, args=None, many=None, key='default'):
     con = None
     c = None
 
-    def _all():
-        try:
-            result = c.fetchmany(many)
-            while result:
-                for row in result:
-                    yield row
-                result = c.fetchmany(many)
-        finally:
-            c and c.close()
-            con and pool.push(con)
-
     try:
         con = pool.pop()
         c = con.get_cursor()
         LOGGER.debug("sql: " + sql + " args:" + str(args))
         c.execute(sql, args)
         if many and many > 0:
-            return _all()
+            return _yield(con, c, many)
         else:
             return c.fetchall()
 
@@ -149,10 +138,20 @@ def query(sql, args=None, many=None, key='default'):
         LOGGER.error("Error Qeury on %s", e.args[1])
         raise DBError(e.args[0], e.args[1])
     finally:
-
         many or (c and c.close())
         many or (con and pool.push(con))
 
+
+def _yield(con, cursor , many):
+    try:
+        result = cursor.fetchmany(many)
+        while result:
+            for row in result:
+                yield row
+            result = cursor.fetchmany(many)
+    finally:
+        cursor and cursor.close()
+        con and pool.push(con)
 
 def execute(sql, args=None, key='default'):
     """It is used for update, delete records::
