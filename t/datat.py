@@ -37,13 +37,15 @@ class TaskMapperTest(unittest.TestCase):
         assert task.attempts == self.task.attempts
 
     def test_save(self):
-        task = Backend('task').find('job_test')
+        task = Backend('task').find('job_test') 
+        task.fresh()
         task.attempts += 1
         task.status = Task.COMPLETED
         Backend('task').save(task)
         task = Backend('task').find('job_test')
         assert task.name == self.task.name
         assert task.event == self.task.event
+        assert task.run_times == 1
         assert task.attempts == self.task.attempts + 1
         assert task.status == Task.COMPLETED
 

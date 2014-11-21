@@ -21,6 +21,33 @@ class TaskTest(unittest.TestCase):
         self.assertEqual(task.next_run, datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"))
         self.assertTrue(task.gen_next_run() > datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"))
 
+    def test_fresh(self):
+        task = Task(1, 'task_id', 'name', 'job.test', {'args':(), 'kw':{}}, 'every 5')
+        res = task.fresh()
+        assert res == True
+        assert task.task_id is None
+        assert task.status == Task.SCHEDULED
+        assert task.run_times == 1
+
+        task = Task(1, 'task_id', 'name', 'job.test', {'args':(), 'kw':{}}, 'every 5')
+        task.event = 'at 20141111 1212'
+        res = task.fresh()
+        assert res == False
+
+    def test_retry(self):
+        task = Task(1, 'task_id', 'name', 'job.test', {'args':(), 'kw':{}}, 'every 5')
+        res = task.retry()
+        assert res == True
+        assert task.attempts == 1
+        assert task.status == Task.RETRY
+
+        task = Task(1, 'task_id', 'name', 'job.test', {'args':(), 'kw':{}}, 'every 5')
+        task.attempts = 4
+        res = task.retry()
+        assert res == False
+        assert task.status == Task.ABORTED
+        assert task.run_times == 1
+
     def test_event_type(self):
         t = datetime.now() + timedelta(minutes=5)
         task = Task(1, 'task_id', 'name', 'job.test',  {'args':(), 'kw':{}}, 'at ' + t.strftime('%Y%m%d%H%M'))

@@ -11,9 +11,9 @@ CREATE TABLE `cron` (
   `event`  VARCHAR(64) NOT NULL,
   `next_run` DATETIME DEFAULT NULL,
   `last_run` DATETIME DEFAULT NULL,
+  `run_times` INT(11) unsigned NOT NULL,
   `attempts` TINYINT DEFAULT 0 NOT NULL,
   `status` TINYINT unsigned DEFAULT 0,
---`last_five_logs` TEXT NOT NULL,
   
   PRIMARY KEY `cron_id` (`cron_id`),
   UNIQUE KEY `name` (`name`)

@@ -144,7 +144,7 @@ class Task(object):
     }
 
     def __init__(self, cron_id, task_id, name, action, data, event, 
-        next_run=None, last_run=None, attempts=0, status=NEW, last_five_logs=None):
+        next_run=None, last_run=None, run_times=0, attempts=0, status=NEW, last_five_logs=None):
         self.cron_id = cron_id
         self.task_id = task_id
         self.name = name
@@ -152,6 +152,7 @@ class Task(object):
         self.data = data
         self.event = event
         self.last_run = last_run
+        self.run_times = run_times
 
         if not next_run:
             if self.validate_event():
@@ -200,23 +201,33 @@ class Task(object):
         return pattern
 
     def fresh(self):
-        if self._pattern[0] in ('at' or 'loop'):
-            return False
+        
         self.task_id = None
-        self.next_run = self.gen_next_run()
+        
         self.last_run = datetime.now()
+        self.run_times += 1
         self.attempts = 0
-        self.status = self.SCHEDULED
-        return True
+        
+        if self.pattern[0] in ('at' or 'loop'):
+            self.status = self.COMPLETED
+            return False
+        else:
+            self.next_run = self.gen_next_run()
+            self.status = self.SCHEDULED
+            return True
 
     def retry(self):
+        self.task_id = None
+        self.run_times += 1
+        self.attempts += 1
+        self.last_run = datetime.now()
         if self.attempts < self.ATTEMPT_LIMIT:
-            self.attempts += 1
             self.status = self.RETRY
             self.next_run = datetime.now()
-            self.last_run = datetime.now()
             return True
-        return False
+        else:
+            self.status = self.ABORTED
+            return False
 
     def gen_next_run(self):
         return self.GEN_NEXT_RUNS[self.pattern[0]].gen_next_run(self.pattern[1])
