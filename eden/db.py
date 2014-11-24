@@ -142,7 +142,7 @@ def query(sql, args=None, many=None, key='default'):
         many or (con and pool.push(con))
 
 
-def _yield(con, cursor , many):
+def _yield(pool, con, cursor , many):
     try:
         result = cursor.fetchmany(many)
         while result:
