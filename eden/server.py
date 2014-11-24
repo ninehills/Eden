@@ -13,6 +13,12 @@ class EdenController(object):
     def page(self, page=1):
         return 'Page %s' % (page)
 
+    def login_page(self):
+        return render_template('login.html')
+
+    def login(self, user=None, password=None):
+        return "User: %s, Password : %s" %(user, password)
+
 
 class EdenWebServer(WebServer):
 
@@ -34,10 +40,14 @@ class EdenWebServer(WebServer):
         ctl = EdenController()
         m = self.new_route()
         m.mapper.explicit = False
+
         m.connect('index', '/', controller=ctl, action='index')
         m.connect('get', '/get', controller=ctl, action='get')
-        m.connect('page', '/page', controller=ctl, action='page')
+        m.connect('page_1', '/page', controller=ctl, action='page')
         m.connect('page', '/page/:page', controller=ctl, action='page')
+        m.connect('login_page', '/login', controller=ctl, action='login_page',conditions=dict(method=["GET"]))
+        m.connect('login', '/login', controller=ctl, action='login', conditions=dict(method=["POST"]))
+
         return ctl, m
 
 

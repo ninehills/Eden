@@ -1,0 +1,62 @@
+@charset "utf-8";
+/* CSS Document */
+intput[type=email], input[type=text], input[type=password], input[type=url] {
+    display: inline-block;
+    height: 37px;
+    margin: 0;
+    padding: 0 8px;
+    background: #FFF;
+    border: 1px solid #707070;
+    border-top-color: #888888;
+    border-radius: 2px;
+}
+intput[type=email]:hover, input[type=text]:hover, input[type=password]:hover, input[type=url]:hover {
+    border: 1px solid #0066FF;
+    border-top: ##a0a0a0;
+    box-shadow: inset 0 1px 2px rgba(0.1, 0, 0, 0);
+}
+intput[type=email]:focus, input[type=text]:focus, input[type=password]:focus, input[type=url]:focus {
+    border: 1px solid #fe580f;
+    box-shadow: inset 0 1px 2px rgba(0, 0.1, 0, 0);
+}
+.p-button {
+    display: inline-block;
+    min-width: 46px;
+    text-align: center;
+    color: #444;
+    font-size: 15px;
+    font-weight: bold;
+    height: 30px;
+    padding: 0 8px;
+    line-height: 30px;
+    border-radius: 2px;
+    transition: all 0.218s;
+    border: 1px solid #dcdcdc;
+    background-color: #f5f5f5;
+    background-image: linear-gradient(top, #f5f5f5, #f1f1f1);
+    user-select: none;
+    cursor: default;
+}
+*+html .p-button {
+    min-width: 70px;
+}
+button.p-button, input[type=sumbit].p-button {
+    height: 40px;
+    line-height: 40px;
+    vertical-align: bottom;
+    margin: 0;
+}
+.p-button-submit {
+    border: 1px solid #3681fc;
+    color: #fff;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.1);
+    background-color: #3e86fd;
+    background-image: linear-gradient(top, #3e86fd, #3e86fd);
+}
+.p-button-submit:hover {
+    border: 1px solid #3681fc;
+    color: #fff;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+    background-color: #176dfc;
+    background-image: linear-gradient(top, #3e86fd, #176dfc);
+}
