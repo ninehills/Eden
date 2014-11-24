@@ -2,7 +2,9 @@ import logging
 import time
 import threading
 import sys
-
+import Queue
+import uuid
+from eden.data import Backend
 try:
     from thread import get_ident
 except ImportError:
@@ -10,37 +12,57 @@ except ImportError:
 
 LOGGER = logging.getLogger(__name__)
 
-_SHUTDOWNJOB = object()
+_SHUTDOWNTASK = object()
 
 
-class Schedule(object):
+
+class Scheduler(object):
 
     # the total for worker thread to cleanly exit
     SHOTDOWN_TIMEOUT = 5
 
-    def __init__(self, app, min, max):
+    def __init__(self, app, task_size=10, minthreads=10, maxthreads=50):
+        minthreads = minthreads or 1
+        minthreads = 1 if minthreads <=0 else minthreads
+        maxthreds = maxthreds or 500
+        maxthreds = 500 if maxthreds > 500 else maxthreds
+        if maxthreds <= minthreads:
+            raise TypeError('maxthreds:%d must greater than minthreads:%d', maxthreds, minthreads)
+
         self.app = app
-        self.ready = False
-        self.threadpool = ThreadPool(self, min, max)
-        self.done = None
-        self.thread = None
+        self.ready = False 
+        self.task_size = task_size or ((maxthreds - minthreads) / 2)
+        self._idel_tasks = Queue.Queue()
+        self.threadpool = ThreadPool(self, minthreads, maxthreds)
+        self.heartbeat = HeartBeat(self, self._periodic_action, 5)
+
+    def _periodic_action(self):
+        idel_queue_size = self._idel_tasks.size()
+        for _ in range(idel_queue_size):
+            task = self.get()
+            self.execute(task, True)
+
+    get = lambda self: self._idel_tasks.get()
+
+    put = lambda self, task: self._idel_tasks.put(task)
 
     def run(self):
         LOGGER.debug('Starting schedule ....')
         LOGGER.debug('master thread : %d', get_ident())
         self.ready = True
-        # self.threadpool.start()
+        self.threadpool.start()
+        self.heartbeat.start()
         
         while self.ready:
             try:
-                jobs = self.claim()
-                if not jobs:
+                tasks = self.claim()
+                if not tasks:
                     time.sleep(5)
+                    continue
 
-                for job in jobs:
-                    LOGGER.debug('current_job: %s', job)
-                    self.execute(job)
-                #time.sleep(5)
+                for task in tasks:
+                    LOGGER.debug('current_task: %s', task)
+                    self.execute(task)
            
             except Exception as e:
                 LOGGER.error('Internal Error: %s', e)
@@ -49,23 +71,25 @@ class Schedule(object):
         self.stop()
 
     def stop(self):
+        self.heartbeat.stop()
         self.threadpool.stop(self.SHOTDOWN_TIMEOUT)
 
-    def execute(self, job):
+    def execute(self, task, retry=False):
         try:
-            self.done = False
-            self.thread = self.threadpool.pop()
-            if self.thread:
+            done = False
+            thread = self.threadpool.pop()
+            if thread:
                 LOGGER.debug('execute in thread: %s', self.thread)
-                self.thread.current_job = job
+                thread.current_task = task
                 self.thread.resume()
-                self.done = True
-                self.thread = None
+                done = True
+            elif not retry:
+                self.put(task)
         except (KeyboardInterrupt, SystemExit):
                 self.ready = False
-                if not self.done and self.thread:
-                    self.thread.current_job = _SHUTDOWNJOB
-                    self.thread.resume()
+                if not done and thread:
+                    thread.current_task = _SHUTDOWNTASK
+                    thread.resume()
         except Exception as e:
             LOGGER.error('Error : %s', e)
             raise
@@ -73,7 +97,50 @@ class Schedule(object):
     def claim(self):
         return [{'action': 'user.add', 'args': ('xx', ), 'kw': dict()}] * 5
 
+    def gen_task_id(self):
+        return str(uuid.uuid4())
 
+    @classmethod
+    def add_task(cls, name, event, action, *args, **kw):
+        data = {'args': args, 'kw': kw}
+        task = Task(None, None, name, event, action, data)
+        return Backend('task').save(job)
+
+    @classmethod
+    def stop_task(cls, name):
+        task = Backend('task').find(name)
+        if job and job.status != Task.RUNNING:
+            task.status = Task.STOP
+            Backend('task').save(task)
+            return True
+        return False
+
+    def delete_task(cls, name):
+        task = Backend('task').find(name)
+        if job and job.status != Task.RUNNING:
+            Backend('task').delete(task)
+            return True
+        return False
+
+class HeartBeat(threading.Thread)
+
+    def __init__(self, interval=5, callback):
+        self.callback = callback
+        self.interval = interval
+        self.ready = False
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.ready = True
+        while self.ready:
+            time.sleep(self.interval)
+            self.callback()
+
+    def stop(self):
+        self.ready = False
+        if self.isAlive():
+            self.join()
+            
 class ThreadPool(object):
 
     def __init__(self, schedule, min, max):
@@ -99,24 +166,19 @@ class ThreadPool(object):
             self._idle_threads.append(thread)
 
     def pop(self):
+        """Non-block pop an idle thread, if not get returns None"""
         thread = None
-        first_tried = time.time()
-        while True:
-            self._lock.acquire()
-            if self._idle_threads:
-                thread = self._idle_threads.pop(0)
+        self._lock.acquire()
+        if self._idle_threads:
+            thread = self._idle_threads.pop(0)
+            self._in_use_threads[thread] = True
+        else:
+            if self._created < self.max:
+                self._created += 1
+                thread = self._new_thread()
                 self._in_use_threads[thread] = True
-            else:
-                if self._created < self.max:
-                    self._created += 1
-                    thread = self._new_thread()
-                    self._in_use_threads[thread] = True
-            self._lock.release()
-
-            if not thread and 3 <= (time.time() - first_tried):
-                raise ThreadPoolError("tried 3 sethreadds, can't load thread, maybe too many jobs")
-
-            return thread
+        self._lock.release()
+        return thread
 
     def _new_thread(self):
         return WorkerThread(self.schedule, self)
@@ -134,14 +196,11 @@ class ThreadPool(object):
                     LOGGER.info('_idle_threads')
                     while self._idle_threads:
                         worker = self._idle_threads.pop(0)
-                        worker.current_job = _SHUTDOWNJOB
+                        worker.current_task = _SHUTDOWNtask
                         worker.resume()
                         #worker.event.clear()
                 else: 
                     break
-
-class ThreadPoolError(Exception):
-    pass
 
 
 class WorkerThread(threading.Thread):
@@ -150,7 +209,7 @@ class WorkerThread(threading.Thread):
         self.ready = False
         self.event = threading.Event()
         self.schedule = schedule
-        self.current_job = None
+        self.current_task = None
         self.pool = pool
         threading.Thread.__init__(self)
         self.start()
@@ -166,16 +225,16 @@ class WorkerThread(threading.Thread):
         self.ready = True
         LOGGER.debug('Starting thread %d', get_ident())
         while self.ready:
-            if self.current_job == _SHUTDOWNJOB:
+            self.suspend()
+            if self.current_task == _SHUTDOWNTASK:
                 # shutdown the worker thread
                 self.ready = False
                 break
-            self.suspend()
             try:
-                if self.current_job:
-                    self.schedule.app(**self.current_job)
+                if self.current_task:
+                    self.schedule.app(**self.current_task)
             finally:
-                self.current_job = None
+                self.current_task = None
                 self.pool.push(self)
         self.event.clear()
 
@@ -194,5 +253,5 @@ def setdebug(debug=False):
 
 setdebug(True)
 
-schedule = Schedule(app, 1, 10)
-schedule.run()
+scheduler= Scheduler(app, 1, 10)
+scheduler.run()
