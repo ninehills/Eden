@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
 from mako.lookup import TemplateLookup
-from eden.lang import text
 
 template_vars = {
-    't': text
+    
 }
 
 
