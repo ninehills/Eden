@@ -26,7 +26,7 @@ class _EveryPattern(object):
     def validate(self, pattern):
         if self.INTERGE_RE.match(pattern):
             s = int(pattern)
-            if s >= 2:
+            if s >= 1:
                 return True
         return False
 
@@ -127,13 +127,12 @@ class Task(object):
 
     NEW = 0
     SCHEDULED = 1
-    RUNNING = 2
-    RETRY = 3
-    ERROR = 4
+    RETRY = 2
     
-    COMPLETED = 5
-    STOP  = 6
-    ABORTED = 7
+    RUNNING = 20
+    COMPLETED = 21
+    STOP  = 22
+    ABORTED = 23
 
     ATTEMPT_LIMIT = 5
 
@@ -144,12 +143,12 @@ class Task(object):
     }
 
     def __init__(self, cron_id, task_id, name, action, data, event, 
-        next_run=None, last_run=None, run_times=0, attempts=0, status=NEW, last_five_logs=None):
+        next_run=None, last_run=None, run_times=0, attempts=0, status=NEW, created, last_five_logs=None):
         self.cron_id = cron_id
         self.task_id = task_id
         self.name = name
         self.action = action 
-        self.data = data
+        self.data = data or {}
         self.event = event
         self.last_run = last_run
         self.run_times = run_times
@@ -162,7 +161,8 @@ class Task(object):
         self.next_run = next_run
 
         self.attempts = attempts
-        self.status = status    
+        self.status = status 
+        self.created = created or datetime.now()   
         self.last_five_logs = last_five_logs or []
 
     def validate_event(self):
@@ -208,7 +208,7 @@ class Task(object):
         self.run_times += 1
         self.attempts = 0
         
-        if self.pattern[0] in ('at' or 'loop'):
+        if self.pattern[0] in ('at', 'loop'):
             self.status = self.COMPLETED
             return False
         else:

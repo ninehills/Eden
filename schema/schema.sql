@@ -14,6 +14,7 @@ CREATE TABLE `cron` (
   `run_times` INT(11) unsigned NOT NULL,
   `attempts` TINYINT DEFAULT 0 NOT NULL,
   `status` TINYINT unsigned DEFAULT 0,
+  `created` DATETIME NOT NULL DEFAULT NOW() COMMENT 'The DATETIME when the entry was created.',
   
   PRIMARY KEY `cron_id` (`cron_id`),
   UNIQUE KEY `name` (`name`)

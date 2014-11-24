@@ -6,6 +6,9 @@ from eden.util import json_decode, json_encode
 
 class TaskMapper(object):
 
+    def claim(self, limit, age=None):
+        pass
+
     def find_by_cron_id(self, cron_id):
         res = db.query_one('SELECT * FROM cron WHERE cron_id=%s', (cron_id,))
         if res:
@@ -32,13 +35,13 @@ class TaskMapper(object):
         else:
             data = None
         if task.cron_id is None:
-            return db.execute('INSERT INTO cron(task_id, name, action, data, event, next_run, last_run, run_times, attempts, status) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                              (task.task_id, task.name, task.action, data, task.event, task.next_run, task.last_run, task.run_times, task.attempts, task.status))
+            return db.execute('INSERT INTO cron(task_id, name, action, data, event, next_run, last_run, run_times, attempts, status, created) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                              (task.task_id, task.name, task.action, data, task.event, task.next_run, task.last_run, task.run_times, task.attempts, task.status, task.created))
 
-        return 	db.execute('INSERT INTO cron(task_id, name, action, data, event, next_run, last_run, run_times, attempts, status) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+        return 	db.execute('INSERT INTO cron(task_id, name, action, data, event, next_run, last_run, run_times, attempts, status, created) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
 		 		ON DUPLICATE KEY UPDATE cron_id=VALUES(cron_id), task_id=VALUES(task_id), event=VALUES(event), next_run=VALUES(next_run), \
 		 		last_run=VALUES(last_run), action=VALUES(action), data=VALUES(data),run_times=VALUES(run_times), attempts=VALUES(attempts), status=VALUES(status)',
-                           (task.task_id, task.name, task.action, data, task.event, task.next_run, task.last_run, task.run_times, task.attempts, task.status))
+                           (task.task_id, task.name, task.action, data, task.event, task.next_run, task.last_run, task.run_times, task.attempts, task.status, task.created))
 
     def delete(self, task):
         return db.execute('DELETE FROM cron WHERE cron_id=%s', (task.cron_id,))
