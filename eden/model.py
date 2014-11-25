@@ -231,7 +231,7 @@ class Task(object):
             self._log(self.ABORTED)
             return False
 
-    def is_ruuning(self):
+    def is_running(self):
         if self.status == self.RUNNING:
             return True
         return False

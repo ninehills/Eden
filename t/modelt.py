@@ -21,6 +21,12 @@ class TaskTest(unittest.TestCase):
         self.assertEqual(task.next_run, datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"))
         self.assertTrue(task.gen_next_run() > datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"))
 
+    def test_is_running(self):
+        task = Task(1, 'task_id', 'name', 'job.test',  {'args':(), 'kw':{}}, 'every 5', datetime.strptime("8/8/2014 16:35", "%d/%m/%Y %H:%M"), 
+            datetime.strptime("8/8/2014 16:30", "%d/%m/%Y %H:%M")) 
+        self.assertEqual(task.is_running(), False)
+
+
     def test_fresh(self):
         task = Task(1, 'task_id', 'name', 'job.test', {'args':(), 'kw':{}}, 'every 5')
         res = task.fresh()
