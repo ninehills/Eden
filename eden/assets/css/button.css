@@ -7,7 +7,7 @@ intput[type=email], input[type=text], input[type=password], input[type=url] {
     padding: 0 8px;
     background: #FFF;
     border: 1px solid #707070;
-    border-top-color: #888888;
+    border-toe-color: #888888;
     border-radius: 2px;
 }
 intput[type=email]:hover, input[type=text]:hover, input[type=password]:hover, input[type=url]:hover {
@@ -19,7 +19,7 @@ intput[type=email]:focus, input[type=text]:focus, input[type=password]:focus, in
     border: 1px solid #fe580f;
     box-shadow: inset 0 1px 2px rgba(0, 0.1, 0, 0);
 }
-.p-button {
+.e-button {
     display: inline-block;
     min-width: 46px;
     text-align: center;
@@ -37,23 +37,23 @@ intput[type=email]:focus, input[type=text]:focus, input[type=password]:focus, in
     user-select: none;
     cursor: default;
 }
-*+html .p-button {
+*+html .e-button {
     min-width: 70px;
 }
-button.p-button, input[type=sumbit].p-button {
+button.e-button, input[type=sumbit].e-button {
     height: 40px;
     line-height: 40px;
     vertical-align: bottom;
     margin: 0;
 }
-.p-button-submit {
+.e-button-submit {
     border: 1px solid #3681fc;
     color: #fff;
     text-shadow: 0 1px rgba(0, 0, 0, 0.1);
     background-color: #3e86fd;
     background-image: linear-gradient(top, #3e86fd, #3e86fd);
 }
-.p-button-submit:hover {
+.e-button-submit:hover {
     border: 1px solid #3681fc;
     color: #fff;
     text-shadow: 0 1px rgba(0, 0, 0, 0.3);
