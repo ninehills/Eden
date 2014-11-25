@@ -231,6 +231,11 @@ class Task(object):
             self._log(self.ABORTED)
             return False
 
+    def is_ruuning(self):
+        if self.status == self.RUNNING:
+            return True
+        return False
+
     def _log(self, status):
         if len(self.last_five_logs) == 5:
             self.last_five_logs.pop(0)

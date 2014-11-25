@@ -124,7 +124,7 @@ class Scheduler(object):
     @classmethod
     def stop_task(cls, name):
         task = Backend('task').find(name)
-        if task and task.status != Task.RUNNING:
+        if not task.is_running():
             task.status = Task.STOP
             Backend('task').save(task)
             return True
@@ -133,7 +133,7 @@ class Scheduler(object):
     @classmethod
     def delete_task(cls, name):
         task = Backend('task').find(name)
-        if task and task.status != Task.RUNNING:
+        if not task.is_running():
             Backend('task').delete(task)
             return True
         return False
