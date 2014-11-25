@@ -2,12 +2,21 @@ from eden import db
 
 from eden.model import Task
 from eden.util import json_decode, json_encode
+from datetime import datetime
+import uuid
 
+def gen_task_id():
+    return str(uuid.uuid4())
 
 class TaskMapper(object):
 
     def claim(self, limit, age=None):
-        pass
+        age= age or datetime.now()
+        task_id = gen_task_id()
+        db.execute('UPDATE cron SET task_id=%s, status=%s WHERE task_id IS NULL and next_run<=%s and status<%s LIMIT %s', 
+            (task_id, Task.RUNNING, age, Task.RUNNING, limit))
+        tasks = db.query('SELECT * FROM cron WHERE  task_id=%s', (task_id,))
+        return [self._load(task) for task in tasks]
 
     def find_by_cron_id(self, cron_id):
         res = db.query_one('SELECT * FROM cron WHERE cron_id=%s', (cron_id,))
