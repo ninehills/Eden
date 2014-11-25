@@ -48,6 +48,18 @@ class TaskMapperTest(unittest.TestCase):
         assert task.run_times == 1
         assert task.attempts == self.task.attempts + 1
         assert task.status == Task.COMPLETED
+        assert task.last_five_logs[0]['status'] == Task.SCHEDULED
+
+    def test_save_after_retry(self):
+        task = Backend('task').find('job_test') 
+        task.retry()
+        Backend('task').save(task)
+        task = Backend('task').find('job_test')
+        assert task.name == self.task.name
+        assert task.event == self.task.event
+        assert task.run_times == 1
+        assert task.attempts == self.task.attempts + 1
+        assert task.status == Task.RETRY
 
     def test_delete(self):
         task = Backend('task').find('job_test')

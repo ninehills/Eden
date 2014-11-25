@@ -15,6 +15,7 @@ CREATE TABLE `cron` (
   `attempts` TINYINT DEFAULT 0 NOT NULL,
   `status` TINYINT unsigned DEFAULT 0,
   `created` DATETIME NOT NULL DEFAULT NOW() COMMENT 'The DATETIME when the entry was created.',
+  `last_five_logs` TEXT NOT NULL COMMENT 'the last five logs of the current task',
   
   PRIMARY KEY `cron_id` (`cron_id`),
   UNIQUE KEY `name` (`name`)

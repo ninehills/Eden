@@ -143,7 +143,7 @@ class Task(object):
     }
 
     def __init__(self, cron_id, task_id, name, action, data, event, 
-        next_run=None, last_run=None, run_times=0, attempts=0, status=NEW, created, last_five_logs=None):
+        next_run=None, last_run=None, run_times=0, attempts=0, status=NEW, created=None, last_five_logs=None):
         self.cron_id = cron_id
         self.task_id = task_id
         self.name = name
@@ -201,19 +201,19 @@ class Task(object):
         return pattern
 
     def fresh(self):
-        
         self.task_id = None
-        
         self.last_run = datetime.now()
         self.run_times += 1
         self.attempts = 0
         
         if self.pattern[0] in ('at', 'loop'):
             self.status = self.COMPLETED
+            self._log(self.COMPLETED)
             return False
         else:
             self.next_run = self.gen_next_run()
             self.status = self.SCHEDULED
+            self._log(self.SCHEDULED)
             return True
 
     def retry(self):
@@ -223,11 +223,18 @@ class Task(object):
         self.last_run = datetime.now()
         if self.attempts < self.ATTEMPT_LIMIT:
             self.status = self.RETRY
+            self._log(self.RETRY)
             self.next_run = datetime.now()
             return True
         else:
             self.status = self.ABORTED
+            self._log(self.ABORTED)
             return False
+
+    def _log(self, status):
+        if len(self.last_five_logs) == 5:
+            self.last_five_logs.pop(0)
+        self.last_five_logs.append({'status' : status,'time' : datetime.now()})
 
     def gen_next_run(self):
         return self.GEN_NEXT_RUNS[self.pattern[0]].gen_next_run(self.pattern[1])
