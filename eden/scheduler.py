@@ -119,12 +119,12 @@ class Scheduler(object):
     def add_task(cls, name, event, action, *args, **kw):
         data = {'args': args, 'kw': kw}
         task = Task(None, None, name, event, action, data)
-        return Backend('task').save(job)
+        return Backend('task').save(task)
 
     @classmethod
     def stop_task(cls, name):
         task = Backend('task').find(name)
-        if job and job.status != Task.RUNNING:
+        if task and task.status != Task.RUNNING:
             task.status = Task.STOP
             Backend('task').save(task)
             return True
@@ -133,7 +133,7 @@ class Scheduler(object):
     @classmethod
     def delete_task(cls, name):
         task = Backend('task').find(name)
-        if job and job.status != Task.RUNNING:
+        if task and task.status != Task.RUNNING:
             Backend('task').delete(task)
             return True
         return False
@@ -261,10 +261,6 @@ class WorkerThread(threading.Thread):
                 self.pool.push(self)
         self.event.clear()
 
-
-
-
-
 if __name__ == '__main__':
     from eden import db
     from eden.model import Task
@@ -284,7 +280,7 @@ if __name__ == '__main__':
     # db.setup('localhost', 'test', 'test', 'eden',
     #              pool_opt={'minconn': 3, 'maxconn': 10})
 
-    # task = Task(None, None, 'job_test', 'job.test', {'args': (), 'kw': {}}, 'every 2')
+    # task = Task(None, None, 'task_test', 'task.test', {'args': (), 'kw': {}}, 'every 2')
     # db.execute('delete from cron')
     # for i in range(500):
     #     task.name = 'name_%d' %(i)
@@ -305,7 +301,7 @@ if __name__ == '__main__':
         except:
             LOGGER.info('open failed')
         LOGGER.info('Task name is : %s and date:%s', task.name, date)
-    task = Task(None, None, 'job_test', 'job.test', {'args': (), 'kw': {}}, 'every 2')
+    task = Task(None, None, 'task_test', 'task.test', {'args': (), 'kw': {}}, 'every 2')
     total = 0
     for i in range(100):
         s =  time.time()
