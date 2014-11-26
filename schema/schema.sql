@@ -23,5 +23,21 @@ CREATE TABLE `cron` (
 
 
 
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `uid` MEDIUMINT(8) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(140) NOT NULL,
+  `real_name` varchar(140) NOT NULL,
+  `email` VARCHAR(140) NOT NULL,
+  `password` CHAR(56) NOT NULL,
+  `status` enum('inactive','active', 'banned') NOT NULL,
+  `role` enum('root', 'administrator','user') NOT NULL,
+  `created` DATETIME NOT NULL DEFAULT NOW() COMMENT 'The DATETIME when the user was created.',
+
+  PRIMARY KEY (`uid`),
+  UNIQUE KEY (`email`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 SET @@character_set_client = @saved_cs_client;

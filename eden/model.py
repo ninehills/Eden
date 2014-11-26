@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 import re
 from collections import namedtuple
-
+from hashlib import sha224
 
 class _AtPattern(object):
 
@@ -247,3 +247,42 @@ class Task(object):
     @property
     def event_type(self):
         return self.pattern[0]
+
+
+class User(object):
+
+    def __init__(self, username, email, real_name, password, status, role='user', uid=None, created=None):
+        """If the user load from database, if will intialize the uid and secure password.
+        Otherwise will hash encrypt the real password
+
+        arg role enum: the string in ('user', 'editor', 'administrator')
+        arg status enum: the string in ('actived', 'inactive', 'banned')
+        arg password fix legnth string: the use sha224 password hash
+        """
+
+        self.username = username
+        self.email = email
+        self.real_name = real_name
+        self.status = status
+        self.role = role
+        self.created = created or datetime.now()
+
+        if uid:
+            self.uid = uid
+            self.password = password
+        else:
+            self.uid = None
+            self.password = self.secure_password(password)
+
+    def check(self, password):
+        """Check the password"""
+        return self.password == self.secure_password(password)
+
+    def secure_password(self, password):
+        """Encrypt password to sha224 hash"""
+        return sha224(password).hexdigest()
+
+    def as_json(self):
+        data = self.__dict__.copy()
+        del data['password']
+        return data

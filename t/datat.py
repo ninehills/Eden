@@ -1,5 +1,5 @@
 from eden import db
-from eden.model import Task
+from eden.model import Task, User
 from eden.data import Backend
 
 
@@ -37,7 +37,7 @@ class TaskMapperTest(unittest.TestCase):
         assert task.attempts == self.task.attempts
 
     def test_save(self):
-        task = Backend('task').find('job_test') 
+        task = Backend('task').find('job_test')
         task.fresh()
         task.attempts += 1
         task.status = Task.COMPLETED
@@ -51,7 +51,7 @@ class TaskMapperTest(unittest.TestCase):
         assert task.last_five_logs[0]['status'] == Task.SCHEDULED
 
     def test_save_after_retry(self):
-        task = Backend('task').find('job_test') 
+        task = Backend('task').find('job_test')
         task.retry()
         Backend('task').save(task)
         task = Backend('task').find('job_test')
@@ -78,6 +78,50 @@ class TaskMapperTest(unittest.TestCase):
         ret = Backend('task').delete_by_task_id(task.task_id)
         task = Backend('task').find('job_test')
         self.assertEqual(task, None)
+
+
+class UserMapper(unittest.TestCase):
+
+    def setUp(self):
+        setattr(db, '__connections', {})
+        db.setup('localhost', 'test', 'test', 'eden',
+                 pool_opt={'minconn': 3, 'maxconn': 10})
+        self.user = User('username', 'email', 'real_name', 'password', 'active')
+        db.execute('DELETE FROM users WHERE email=%s or email=%s',
+                   (self.user.email, 'email2'))
+        Backend('user').save(self.user)
+        self.uid = db.query_one('SELECT uid FROM users WHERE email=%s', (self.user.email,))[0]
+
+    def test_find(self):
+        user = Backend('user').find(self.uid)
+        assert user.username == self.user.username
+        assert user.status == self.user.status
+        assert user.uid == self.uid
+
+        user = Backend('user').find_by_email(self.user.email)
+        assert user.username == self.user.username
+        assert user.status == self.user.status
+        assert user.uid == self.uid
+
+    def test_save(self):
+        # on dup
+        user = Backend('user').find(self.uid)
+        user.status = 'banned'
+        Backend('user').save(user)
+        user = Backend('user').find(self.uid)
+        assert user.status == 'banned'
+
+        # new case
+        user = User('username', 'email2', 'real_name', 'password', 'active')
+        Backend('user').save(user)
+        user = Backend('user').find_by_email(self.user.email)
+        assert user is not None
+
+    def test_delete(self):
+        self.user.uid = self.uid
+        ret = Backend('user').delete(self.user)
+        user = Backend('user').find(self.uid)
+        self.assertEqual(user, None)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 from eden import db
 
-from eden.model import Task
+from eden.model import Task, User
 from eden.util import json_decode, json_encode
 from datetime import datetime
 import uuid
@@ -65,37 +65,44 @@ class TaskMapper(object):
     def delete_by_task_id(self, task_id):
         return db.execute('DELETE FROM cron WHERE task_id=%s', (task_id,))
 
+
+
+class UserMapper(object):
+
+    model = User
+    SELECT = 'SELECT username, email, real_name, password, status, role, uid, created FROM users '
+
+    def find(self, uid):
+        """Find and load the user from database by uid(user id)"""
+        data = db.query(self.SELECT + 'WHERE uid=%s', (uid,))
+        if data:
+            return self._load(data[0])
+
+    def find_by_email(self, email):
+        """Return user by email if find in database otherwise None"""
+        data = db.query(self.SELECT + 'WHERE email=%s', (email,))
+        if data:
+            return self._load(data[0])
+
+    def _load(self, data):
+        return self.model(*data)
+
+    def save(self, user):
+        return db.execute("INSERT INTO users(uid, username, email, real_name, password, status, role, created) \
+            VALUES(%s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE \
+            email=VALUES(email), password=VALUES(password), status=VALUES(status), role=VALUES(role)",
+            (user.uid, user.username, user.email, user.real_name, user.password, user.status, user.role, user.created))
+
+    def count(self):
+        return db.query('SELECT COUNT(uid) FROM users')[0][0]
+
+    def delete(self, user):
+        return db.execute('DELETE FROM users WHERE uid=%s', (user.uid,))
+
+
 __backends = {}
 __backends['task'] = TaskMapper()
-
+__backends['user'] = UserMapper()
 
 def Backend(name):
     return __backends.get(name)
-
-
-if __name__ == '__main__':
-    import logging
-    debug = True
-    level = logging.DEBUG if debug else logging.INFO
-    logging.basicConfig(level=level,
-                        format='%(asctime)s %(levelname)-8s %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S', filemode='a+')
-
-    db.setup('localhost', 'test', 'test', 'eden',
-             pool_opt={'minconn': 3, 'maxconn': 10})
-    task = Task(None, 'task_id', 'job_test', 'job.test',
-                {'args': (), 'kw': {}}, 'every 5')
-    task_mapper = Backend('task')
-    task_mapper.delete_by_name('job_test')
-    task_mapper.save(task)
-
-    tasks = task_mapper.find_by_task_id('task_id')
-
-    task = task_mapper.find('job_test')
-    assert task.name == tasks[0].name
-
-    task_ = task_mapper.find_by_cron_id(task.cron_id)
-    assert task_.name == tasks[0].name
-
-    task_find_by_name = task_mapper.find('job_test')
-    assert task_find_by_name.name == tasks[0].name

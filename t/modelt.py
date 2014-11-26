@@ -1,6 +1,6 @@
 
 
-from eden.model import _CrontabPattern, _ParsedSpec, Task
+from eden.model import _CrontabPattern, _ParsedSpec, Task, User
 from datetime import datetime, timedelta
 import unittest
 
@@ -93,6 +93,21 @@ class _CrontabPatternTest(unittest.TestCase):
         for i, gen in enumerate(gens[0:10]):
             self.assertEqual(self.pat.gen_next_run('*/7 * * * *', gen), gens[i])
 
-           
+
+class UserTest(unittest.TestCase):
+
+    def setUp(self):
+        self.new_user = User('username', 'email', 'real_name', 'password', 'status')
+        self.db_user = User('username', 'email', 'real_name',
+                                  'd63dc919e201d7bc4c825630d2cf25fdc93d4b2f0d46706d29038d01', 'status', uid=1)
+
+    def test_secure_passwod(self):
+        self.assertEqual(self.new_user.secure_password('password'),
+                         'd63dc919e201d7bc4c825630d2cf25fdc93d4b2f0d46706d29038d01')
+
+    def test_check(self):
+        self.assertTrue(self.new_user.check('password'))
+        self.assertTrue(self.db_user.check('password'))
+
 if __name__ == '__main__':
     unittest.main()
