@@ -21,7 +21,7 @@ WebOb is released under an `GPL license <license.html>`_.
 
 Eden development happens on `GitHub <https://github.com/thomashuang/Eden/master>`_.
 Development version is installable via `easy_install
-webob==dev <https://github.com/thomashuang/Eden>`__.  You
+eden==dev <https://github.com/thomashuang/Eden>`__.  You
 can clone the source code with::
 
     $ git clone https://github.com/thomashuang/Eden.git 
