@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pkg_resources
 
-version = release = pkg_resources.get_distribution('eden').__version__
+version = release = pkg_resources.get_distribution('eden').version
 
 extensions = ['sphinx.ext.autodoc']
 
