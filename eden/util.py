@@ -35,9 +35,6 @@ def as_json(o):
 
 json_decode = json.loads
 
-def json_encode(value, default=as_json):
+def json_encode(value, ensure_ascii=True, default=as_json):
     """Returns the json serialize stream"""
-    return json.dumps(value,
-        default=default).replace(ur'\u2028',
-                                 '\\u2028').replace(ur'\2029',
-                                                    '\\u2029')
+    return json.dumps(value, default=default, ensure_ascii=ensure_ascii)
