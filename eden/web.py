@@ -127,12 +127,32 @@ class WebServer(object):
 
         return conf
 
+    def set_404_pape(self, not_found_handler):
+        """Custom not found page"""
+        self.config['global']['error_page.404'] = not_found_handler
+
+
     def asset(self, path, asset_path):
         """Set servering Static directory"""
         self.config[path] = {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': asset_path
         }
+
+    def handle_internal_exception(self):
+        """Handle the unknow exception and also throw 5xx status and message to frontend"""
+        cls, e, tb = sys.exc_info()
+
+        LOGGER.exception('Unhandled Error %s', e)
+        resp = cherrypy.response
+        resp.status = 500
+        resp.content_type = 'text/html; charset=UTF-8'
+
+        if cherrypy.request.method != 'HEAD':
+            resp.body = ["""<html>
+<head><title>Internal Server Error </title></head>
+<body><p>An error occurred: <b>%s</b></p></body>
+</html> """ % (str(e))]
 
     def new_route(self):
         return cherrypy.dispatch.RoutesDispatcher()
