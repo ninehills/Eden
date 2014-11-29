@@ -89,9 +89,8 @@ class GeventWSGIServer(object):
 
 class WebServer(object):
 
-    def __init__(self, server_name='Sola', host='127.0.0.1', port=8080, use_gevent=True, debug=False, encoding='utf-8'):
+    def __init__(self, server_name='Sola', host='127.0.0.1', port=8080, use_gevent=True, debug=False, encoding='UTF-8'):
         self.server_name = server_name
-        self.ready = False
         self.host = host
         self.port = port
         self.debug = debug
@@ -100,12 +99,9 @@ class WebServer(object):
         self.config = self.gen_config()
         self.bootstrap()
 
-    def asset(self, path, asset_path):
-        """Mount Static directory"""
-        self.config[path] = {
-            'tools.staticdir.on': True,
-            'tools.staticdir.dir': asset_path
-        }
+    def bootstrap(self):
+        """You can intialize more configs or settings in here"""
+        pass
 
     def gen_config(self):
         conf = {
@@ -117,9 +113,9 @@ class WebServer(object):
                     #'log.screen': self.debug,
                     'log.error_file': '',
                     'log.access_file': '',
-
-                    'tools.decode.on': unicode,
-                    'tools.encode.on': unicode,
+                    'request.error_response': self.handle_internal_exception,
+                    'tools.decode.on': True,
+                    "tools.encode.on": True,
                     'tools.encode.encoding': self.encoding,
                     'tools.gzip.on': True,
                     'tools.log_headers.on': False,
@@ -131,8 +127,12 @@ class WebServer(object):
 
         return conf
 
-    def bootstrap(self):
-    	pass
+    def asset(self, path, asset_path):
+        """Set servering Static directory"""
+        self.config[path] = {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': asset_path
+        }
 
     def new_route(self):
         return cherrypy.dispatch.RoutesDispatcher()
