@@ -44,10 +44,24 @@ html {
 	margin: 0 auto;
 	position: relative;
 }
-#nav  a {
-	display: inline-block;
-	margin-top: 10px;
+
+#nav  li {
+	padding-left: 20px;
+	list-style-type: disc;
 	width: 60px;
+	display: block;
+	float: left;
+}
+
+#nav ul {
+	padding: 10px;
+	margin-left: 100px;
+	display: block;
+}
+#nav  ul a {
+	/*margin-top: 10px;*/
+	width: 60px;
+	font-size: 20px;
 	text-decoration: None;
 	color: white;
 	text-align: center;
@@ -55,49 +69,61 @@ html {
 #nav a:hover {
 	text-decoration: underline;
 }
+
+.logo a {
+	margin: 0px;
+	font-size: 40px;
+	text-decoration: none !important;
+	float: left;
+	color: white;
+}
+
+.logo a:hover {
+	font-size: 40px;
+	text-decoration: none !important;
+}
+
 #main {
-	height: 200px;
 	width: 960px;
 	margin: 0 auto;
+	min-height: 500px;
 }
-#login-div {
-	height: 200px;
-	width: 600px;
-	margin: 0 auto;
-	margin-top: 50px;
-	border: 1px solid #006699;
-	border-radius: 5px;
-	border-top: 10px solid #006699;
-}
-#login-div p {
-	margin: 10px;
-	padding: 10px;
-	width: 200px;
-	color: #006699;
-	font-size: 20px;
-}
-#login-form {
-	margin-left: 40px;
-	padding: 10px;
 
+
+#main-footer {
+	margin-top: 20px; 
+	height:20px;
+	padding: 4px;
+	border-top: 1px solid #eee;
 }
-#login-form input[type=text], input[type=password] {
-	height: 30px;
-	width: 300px;
-	margin: 5px auto;
+
+#main-footer ul
+{
+	padding: 2px;
+	width:500px;
+	margin:2px auto;
 }
-#login-form input[type=password] {
-	height: 30px;
-	width: 300px;
-	margin: 5px auto;
+
+#main-footer ul > li {
+	
+	display: inline;
+	padding: 2px;
+	margin: 2px;
+	font-size: 12px;
 }
-#login-submit {
-	margin: 5px;
-	margin-left: 90px;
-	width: 80px;
+
+
+a.footer-link
+{
+	color:#6aaefb;
+	text-decoration: none;
 }
-label {
-	width: 80px;
-	height: 30px;
-	display: inline-block;
+a.footer-link:link, a.footer-link:visited{
+	
+	text-decoration: none;
+}
+
+a.footer-link:hover{
+	
+	text-decoration: underline;
 }
