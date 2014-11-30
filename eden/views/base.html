@@ -1,0 +1,49 @@
+<!doctype html>
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+<html>
+<head>
+	<meta name="viewport" content="width=600">
+	<meta charset="utf-8">
+	<title>Home</title>
+
+	<link rel="stylesheet" href="/assets/css/form.css">
+	<link rel="stylesheet" href="/assets/css/main.css">
+	
+	<meta htte-equiv="X-UA-Compatible" content="chrome=1">
+	
+	${next.headIncludes()}
+</head>
+<body>
+	<div id='header'>
+		<div id='nav'>
+		<span class='logo'>
+			<a href='/'>Eden</a>
+		</span>
+		<ul>
+			<li><a href='/user'>User</a></li>
+			<li><a href="/task">Task</a></li>
+			<li><a href="/task/new">+</a></li>
+			<li><a href="/logout">Logout</a></li>
+		</ul>
+		</div>
+	</div>
+
+	<div id='main'>
+		${next.body()}
+	 	<div id="main-footer">
+	        <ul>
+	                <li>&copy; 2014 Eden</li>
+	                <li><a target="_blank"  class = "footer-link"  href="#">About</a></li>
+	                <li><a target="_blank" class = "footer-link"  href="#">License</a></li>
+	        </ul>
+		</div>	
+	</div>
+
+
+</body>
+</html>
+
+<%def name="headIncludes()"></%def>
