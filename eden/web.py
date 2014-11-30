@@ -27,8 +27,7 @@ class GreenletServing(object):
     __slots__ = ('__local__', )
 
     def __init__(self):
-        object.__setattr__(self, '__local__', {
-        })
+        object.__setattr__(self, '__local__', {})
         ident = get_ident()
         self.__local__[ident] = {
             'request': _cprequest.Request(httputil.Host("127.0.0.1", 80), httputil.Host("127.0.0.1", 1111)),
