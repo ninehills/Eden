@@ -277,6 +277,17 @@ class User(object):
             self.uid = None
             self.password = self.secure_password(password)
 
+    def password():
+        doc = "The password property."
+        def fget(self):
+            return self._password
+        def fset(self, value):
+            self._password = self.secure_password(value)
+        def fdel(self):
+            del self._password
+        return locals()
+    password = property(**password())
+
     def check(self, password):
         """Check the password"""
         return self.password == self.secure_password(password)
@@ -287,5 +298,5 @@ class User(object):
 
     def as_json(self):
         data = self.__dict__.copy()
-        del data['password']
+        del data['_password']
         return data
