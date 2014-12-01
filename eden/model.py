@@ -216,7 +216,7 @@ class Task(object):
             self._log(self.SCHEDULED)
             return True
 
-    def retry(self):
+    def retry(self, msg):
         self.task_id = None
         self.run_times += 1
         self.attempts += 1
@@ -228,7 +228,7 @@ class Task(object):
             return True
         else:
             self.status = self.ABORTED
-            self._log(self.ABORTED)
+            self._log(self.ABORTED, msg)
             return False
 
     def is_running(self):
@@ -236,10 +236,13 @@ class Task(object):
             return True
         return False
 
-    def _log(self, status):
+    def _log(self, status, msg=None):
         if len(self.last_five_logs) == 5:
             self.last_five_logs.pop(0)
-        self.last_five_logs.append({'status' : status,'time' : datetime.now()})
+        log = {'status' : status,'time' : datetime.now()}
+        if msg:
+            log['msg'] = msg
+        self.last_five_logs.append(log)
 
     def gen_next_run(self):
         return self.GEN_NEXT_RUNS[self.pattern[0]].gen_next_run(self.pattern[1])
