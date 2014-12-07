@@ -27,7 +27,7 @@ import logging
 
 from random import choice
 
-LOGGER = logging.getLogger('peader.db')
+LOGGER = logging.getLogger('eden.db')
 
 #  Add the test table in mysql test dabtabase
 # DROP TABLE IF EXISTS `users` ;
