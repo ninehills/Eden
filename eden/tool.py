@@ -8,7 +8,7 @@ import base64
 import time
 from eden.data import Backend
 from eden.model import User
-from eden.template import render_template
+from eden.web.template import render_template
 
 from eden.util import json_encode
 
