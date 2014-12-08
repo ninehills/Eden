@@ -7,11 +7,12 @@ Eden is distributed Task system
 Supports
 ===========
 
-#. multi-threaded task execution (Leader/Follower variant)
-#. scheduled event at a certain time or periodic execution like a crontab
-#. attempting tasks that fail
-#. A  thread-safe DB Api, and supports master/slave mode 
-#. A Web Management Tool
+#. Multi-threaded task execution (Leader/Follower variant)
+#. Scheduled event at a certain time or periodic execution like a crontab
+#. Attempting tasks that fail
+#. A thread-safe DB Api, and supports master/slave mode 
+#. Take advantage of data-mapper pattern
+#. A Web Management Tool (Built in MVC pattern)
 
 .. image:: https://github.com/thomashuang/Eden/blob/master/docs/img/task.png
 
