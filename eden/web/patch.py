@@ -14,7 +14,7 @@ LOGGER = logging.getLogger('web.patch')
 try:
     from greenlet import getcurrent as get_ident
 except ImportError:
-    LOGGER.ERROR('You shall install Gevent, if wanna use geven wsgi server')
+    LOGGER.ERROR('You shall install Gevent, if wanna use gevent wsgi server')
     exit(1)
 
 
