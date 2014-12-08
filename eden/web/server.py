@@ -1,69 +1,19 @@
 #!/usr/bin/env python
 
 import cherrypy
-from cherrypy import _cprequest
-from cherrypy.lib import httputil
 import sys
 import logging
 from cherrypy.process import servers
 
-try:
-    from greenlet import getcurrent as get_ident
-except ImportError:
-    try:
-        from thread import get_ident
-    except ImportError:
-        from _thread import get_ident
-
-
-LOGGER = logging.getLogger(__name__)
-
-
-def patch_cherrypy():
-    cherrypy.serving = GreenletServing()
-
-
-class GreenletServing(object):
-    __slots__ = ('__local__', )
-
-    def __init__(self):
-        object.__setattr__(self, '__local__', {})
-        ident = get_ident()
-        self.__local__[ident] = {
-            'request': _cprequest.Request(httputil.Host("127.0.0.1", 80), httputil.Host("127.0.0.1", 1111)),
-            'response': _cprequest.Response()
-        }
-
-    def load(self, request, response):
-        self.__local__[get_ident()] = {
-            'request': request,
-            'response': response
-        }
-
-    def __getattr__(self, name):
-        try:
-            return self.__local__[get_ident()][name]
-        except KeyError:
-            raise AttributeError(name)
-
-    def __setattr__(self, name, value):
-        ident = get_ident()
-        local = self.__local__
-        try:
-            local[ident][name] = value
-        except KeyError:
-            local[ident] = {name: value}
-
-    def clear(self):
-        """Clear all attributes of the current greenlet."""
-        del self.__local__[get_ident()]
-
+LOGGER = logging.getLogger('web.server')
 
 class GeventWSGIServer(object):
 
     """Adapter for a gevent.wsgi.WSGIServer."""
 
     def __init__(self, *args, **kwargs):
+        from eden.web.patch import patch_cherrypy
+
         patch_cherrypy()
         self.args = args
         self.kwargs = kwargs
@@ -139,7 +89,7 @@ class WebServer(object):
         }
 
     def handle_internal_exception(self):
-        """Handle the unknow exception and also throw 5xx status and message to frontend"""
+        """Handle the unknow exception and also throw 5xx status and push message to frontend"""
         cls, e, tb = sys.exc_info()
 
         LOGGER.exception('Unhandled Error %s', e)
