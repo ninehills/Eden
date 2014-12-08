@@ -95,6 +95,39 @@ select + .arrow {
     border-left: 4px solid transparent;
 }
 
+form input[type=text], input[type=password], input[type=email] {
+    height: 30px;
+    width: 200px;
+    margin: 5px auto;
+}
+
+form label {
+    width: 120px;
+}
+
+hgroup {
+    overflow: hidden;
+}
+
+hgroup h1 {
+        float: left;
+        font-size: 29px;
+        line-height: 120px;
+        font-weight: 300;
+    }
+
+    hgroup nav {
+        float: right;
+        line-height: 120px;
+    }
+
+#wrap {
+
+    margin-left: 20px;
+
+
+}
+
 
 /*
     Buttons

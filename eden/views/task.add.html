@@ -1,0 +1,39 @@
+<%inherit file="base.html"/>
+
+
+<%def name="body()">
+
+
+<div id='wrap'>
+
+    <hgroup class="wrap">
+        <h1>Add Task</h1>
+    </hgroup>
+    <form id='task-form' method="post" action='/task/add' novalidate autocomplete="off">
+
+            <p>
+                <label>Name:</label>
+                <input type='text' name='name'>
+            </p>
+            <p>
+                <label>Action :</label>
+                <input type='text' name='action'>
+            </p>
+            <p>
+                <label>Data:</label>
+                <input type='text' name='data' >
+            </p>
+            <p>
+                <label>Event:</label>
+                <input type='text' name='event'>
+            </p>
+
+
+        <aside>
+            <input  value='Add' class='btn' type ='submit'>
+        </aside>
+    </form>
+
+</div>
+
+</%def>

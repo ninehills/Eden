@@ -1,0 +1,58 @@
+<%inherit file="base.html"/>
+
+<%def name="body()">
+<hgroup class="wrap">
+    <h1>Edit User</h1>
+</hgroup>
+
+<div id='wrap'>
+
+
+    <form id='user-form' method="post" action='/user/${user.uid}/edit' novalidate autocomplete="off">
+
+            <p>
+                <label>Real name:</label>
+                <input type='text' name='real_name' value="${user.real_name}">
+            </p>
+
+            <p>
+                <label>Status:</label>
+                <select name='status' id='status' value='${user.status}'>
+                % for name, value in statuses.items():
+                    <option value="${name}">${value}</option>
+                % endfor
+                </select>
+            </p> 
+            <p>
+                <label>Role:</label>
+                <select name='role' id='role' value='${user.role}'>
+                % for name, value in roles.items():
+                    <option value="${name}">${value}</option>
+                % endfor
+                </select>
+            </p>
+            <p>
+                <label>Password:</label>
+                <input type='password' name='password'>
+            </p>
+            <p>
+                <label> New Password:</label>
+                <input type='password' name='newpass1'>
+            </p>
+            <p>
+                <label>Password Confirm:</label>
+                <input type='password' name='newpass2'>
+            </p>
+            <p>
+                <label>Email:</label>
+                <input type='text' name='email' value="${user.email}">
+            </p>
+
+        <aside>
+            <input  value='Update' class='btn' type ='submit'>
+        </aside>
+    </form>
+
+</section>
+
+</%def>

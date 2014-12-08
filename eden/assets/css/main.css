@@ -1,19 +1,11 @@
-/** {list-style: none;
-	margin: 0;
-	padding: 0;
-	text-decoration: none;
-}
-*/
+
+
 body, ul, ol, h1, h2, h3, h4, h5, h6, form, li, p, input, select, legend, textarea, fieldset {
 	margin: 0;
 	padding: 0;
 }
 
-/* body {
-	font-size: 15px/ 1.5em;
-	font-family: Arial, "MS Trebuchet", sans-serif;
-}
-*/
+
 html {
 	font-size: 15px;
 	background: #fff;
@@ -22,14 +14,6 @@ html {
 	direction: ltr;
 }
 
-/** {margin: 0;
-	padding: 0;
-	-webkit-font-smoothing: antialiased;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-}
-*/
 #header {
 	width: 100%;
 	background-color: black;
@@ -39,35 +23,55 @@ html {
 	left: 0;
 	z-index: 9999;
 }
-#nav {
+#header-nav {
 	width: 960px;
 	margin: 0 auto;
 	position: relative;
 }
 
-#nav  li {
+#header-nav  li {
 	padding-left: 20px;
-	list-style-type: disc;
+	
 	width: 60px;
 	display: block;
 	float: left;
 }
 
-#nav ul {
+#header-nav ul {
 	padding: 10px;
 	margin-left: 100px;
 	display: block;
 }
-#nav  ul a {
+#header-nav  ul a {
 	/*margin-top: 10px;*/
 	width: 60px;
 	font-size: 20px;
 	text-decoration: None;
+    list-style-type: disc;
 	color: white;
 	text-align: center;
 }
-#nav a:hover {
+#header-nav a:hover {
 	text-decoration: underline;
+}
+
+#logout {
+    height: 24px;
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+    line-height: 20px;
+    float: right;
+}
+
+#logout a {
+    margin: 0px;
+display: block;
+text-align: center;
+margin: 2px 4px;
+    font-size: 20px;
+    color: white;
+  
 }
 
 .logo a {
@@ -83,6 +87,93 @@ html {
 	text-decoration: none !important;
 }
 
+.list {
+    list-style: none;
+    width: 100%;
+    
+    border-top: 1px solid #dadfe5;
+}
+    .list li a {
+        display: block;
+        padding: 15px 30px 15px;
+        color: #7d8693;
+
+        position: relative;
+        overflow: hidden;
+        
+        border-bottom: 1px solid #dadfe5;
+    }
+        .list li a:hover {
+            background: #f5f5f5;
+        }
+
+    .list li strong {
+        display: block;
+        width: 85%;
+        height: 20px;
+
+        font-size: 16px;
+        color: #606b7b;
+        
+        position: relative;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+        .list li strong .status {
+            float: right;
+
+            position: relative;
+            top: 10px;
+            right: 30px;
+            z-index: 10;
+        }
+
+    .list li strong + span {
+        display: block;
+        padding-bottom: 8px;
+
+        font-size: 13px;
+        color: #a3acb9;
+    }
+
+    .list li p {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .list li .status {
+        margin-left: 10px;
+    }
+
+
+.paging {
+    margin-top: 20px;
+    clear: both;
+}
+
+.paging a, .paging strong {
+    height: 18px;
+    border: 1px solid #fff;
+    display: inline;
+    margin-left: 10px;
+    padding: 0 4px;
+    line-height: 18px;
+    text-decoration:  none;
+    
+}
+
+.paging a:hover {
+    background-color: #0f820c;
+    color: white;
+}
+
+#current-page {
+    background-color: #0f820c;
+    color: white;
+}
+
 #main {
 	width: 960px;
 	margin: 0 auto;
@@ -90,11 +181,13 @@ html {
 }
 
 
+
 #main-footer {
 	margin-top: 20px; 
 	height:20px;
 	padding: 4px;
 	border-top: 1px solid #eee;
+	clear: both;
 }
 
 #main-footer ul

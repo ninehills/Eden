@@ -1,0 +1,57 @@
+<%inherit file="base.html"/>
+<%def name="headIncludes()">
+    <link rel="stylesheet" href="/assets/css/user.css">
+</%def>
+
+
+<%def name="body()">
+
+
+<div id='wrap'>
+
+    <hgroup class="wrap">
+        <h1>Add User</h1>
+    </hgroup>
+    <form id='user-form' method="post" action='/user/add' novalidate autocomplete="off">
+
+            <p>
+                <label>User Name:</label>
+                <input type='text' name='username'>
+            </p>
+            <p>
+                <label>Password:</label>
+                <input type='password' name='password'>
+            </p>
+            <p>
+                <label>Email:</label>
+                <input type='text' name='email'>
+            </p>
+            <p>
+                <label>Real name:</label>
+                <input type='text' name='real_name' >
+            </p>
+
+            <p>
+                <label>Status:</label>
+                <select name='status' id='status'>
+                % for name, value in statuses.items():
+                    <option value="${name}">${value}</option>
+                % endfor
+                </select>
+            </p> 
+            <p>
+                <label>Role:</label>
+                <select name='role' id='role'>
+                % for name, value in roles.items():
+                    <option value="${name}">${value}</option>
+                % endfor
+                </select>
+            </p>
+        <aside>
+            <input  value='Add' class='btn' type ='submit'>
+        </aside>
+    </form>
+
+</div>
+
+</%def>
