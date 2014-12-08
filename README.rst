@@ -13,7 +13,7 @@ Supports
 #. Attempting tasks that fail
 #. A thread-safe DB Api, and supports master/slave mode 
 #. Take advantage of data-mapper pattern
-#. A Web Management Tool (Built in MVC pattern, writen by mako gevent cherrypy)
+#. A Web Management Tool (Built in MVC pattern writen by mako gevent cherrypy)
 
 .. image:: https://github.com/thomashuang/Eden/blob/master/docs/img/task.png
 
@@ -179,7 +179,7 @@ Here Is A Demo :
 Event
 =======
 
-When you add job to scheduler, you see a event arugement. it is a specfic how to fresh leaderboard. Current event supports three types:
+When you add job to scheduler, you see a event arugement. it is a specfic when to run task. Current event supports three types:
 
 at
 ----
