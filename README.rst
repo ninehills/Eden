@@ -16,6 +16,14 @@ Supports
 .. image:: https://github.com/thomashuang/Eden/blob/master/docs/img/task.png
 
 
+
+What will be in future
+=======================
+
+#. Add mongodb supports 
+#. Improve web tool 
+
+
 How to install
 ==============
 
@@ -164,10 +172,20 @@ Here Is A Demo :
             scheduler.add_task('name_%d' %(i), 'every 2', action, datetime.now(), 'https://www.google.com', session=i)
         scheduler.run()
 
+LICENSE
+=======
 
+    Copyright (C) 2014 Thomas Huang
 
-What will be in future
-=======================
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, version 2 of the License.
 
-#. Add mongodb supports 
-#. Improve web tool 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
