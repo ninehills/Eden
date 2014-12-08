@@ -2,7 +2,7 @@ import logging
 from eden.server import EdenWebServer
 
 
-def run(host='localhost', port=80, use_gevent=True, debug=False):
+def run(host='localhost', port=80, use_gevent=False, debug=False):
     setdebug(debug)
     EdenWebServer(server_name='eden', host=host,
                 port=port, use_gevent=use_gevent, debug=debug).serve_forever()
