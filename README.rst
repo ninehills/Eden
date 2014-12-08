@@ -22,6 +22,7 @@ What will be in future
 
 #. Add mongodb supports 
 #. Improve web tool 
+#. Add Loop Util event
 
 
 How to install
@@ -171,6 +172,42 @@ Here Is A Demo :
                 action = 'task.test'
             scheduler.add_task('name_%d' %(i), 'every 2', action, datetime.now(), 'https://www.google.com', session=i)
         scheduler.run()
+
+Event
+=======
+
+When you add job to scheduler, you see a event arugement. it is a specfic how to fresh leaderboard. Current event supports three types:
+
+at
+----
+
+this event will only run once, in a future datetime, it should at least 1 minute speed from now: the pattern as below::
+
+    at %Y%m%d%H%M
+
+every
+-----
+
+this event will run in loop by minute(s), the pattern is a  unsiged integer::
+
+    every minute(s)
+
+cron
+-----
+
+this event pattern is pattern of crontab, current supports::
+
+      field          allowed values
+      -----          --------------
+      minute         0-59
+      hour           0-23
+      day of month   1-31
+      month          1-12 
+      day of week    0-7 
+
+and the every sub pattern only support below regex expression format::
+
+    ^(\d+-\d+/\d+)|(\d+-\d+)|(\d+)$
 
 LICENSE
 =======
