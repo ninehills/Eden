@@ -2,7 +2,7 @@ Eden
 ########
 
 
-Eden is distributed Task system
+Currently, Eden is A Distributed Scheduler Task System.
 
 Supports
 ===========
@@ -21,9 +21,10 @@ Supports
 What will be in future
 =======================
 
-#. Add mongodb supports 
+#. Add mongodb supports  for scheduler task backend
 #. Improve web tool 
-#. Add Loop Util event
+#. Add Loop Until event for task
+#. Add Queued task supports (Maybe zeromq or rabbitmq backend)
 
 
 How to install
