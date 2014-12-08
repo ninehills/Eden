@@ -282,10 +282,22 @@ class EdenController(object):
 
 class EdenWebServer(WebServer):
 
+    def __init__(self, host='127.0.0.1', port=8080, mako_cache_dir=None, 
+        cookie_secret='7oGwHH8NQDKn9hL12Gak9G/MEjZZYk4PsAxqKU4cJoY=',
+        use_gevent=True, debug=False, ):
+        if not mako_cache_dir:
+            raise TypeError('You must set cache directory for mako')
+        self.cookie_secret = cookie_secret
+        self.mako_cache_dir = mako_cache_dir
+        WebServer.__init__(self, 'Eden', host, port, use_gevent, debug)
+
     def bootstrap(self):
         self.bootstrap_template()
         self.booststrap_db()
         self.bootstrap_tools()
+
+        from eden import tool 
+        tool.COOKIE_SECRET = self.cookie_secret
 
     def bootstrap_template(self):
         from eden.web.template import setup_template, template_vars
@@ -296,14 +308,15 @@ class EdenWebServer(WebServer):
         setup_template([
             os.path.join(path, 'views/'),
             os.path.join(path, 'views/layouts/')],
-            module_cache_dir=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cache'))
+            module_cache_dir=self.mako_cache_dir)
 
         # Mount static files
         self.asset('/assets', os.path.join(os.path.dirname(__file__), 'assets'))
 
     def booststrap_db(self):
-        from eden import db
-        db.setup('localhost', 'test', 'test', 'eden', pool_opt={'minconn': 3, 'maxconn': 10})
+        pass
+        # from eden import db
+        # db.setup('localhost', 'test', 'test', 'eden', pool_opt={'minconn': 3, 'maxconn': 10})
 
     def bootstrap_tools(self):
 

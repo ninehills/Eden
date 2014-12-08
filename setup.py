@@ -11,17 +11,22 @@ setup(
     license = "GPL",
     keywords = "Python Distributed Task System",
     url='https://github.com/thomashuang/Eden',
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
-    install_requires = ['setuptools'],
+    package_data = {
+              # Non-.py files to distribute as part of each package
+              'eden': ['assets/*','views/*']
+    },
+    install_requires = ['setuptools', 'mako', 'cherrypy', 'MySQL-python'],
+    test_suite='unittests',
     classifiers=(
         "Development Status :: Production/Alpha",
         "License :: GPL",
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
-        "Topic :: Internet :: RSS"
+        "Topic :: Scheduler"
         )
     )

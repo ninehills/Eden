@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import logging
 import time
 import threading
@@ -6,6 +7,8 @@ import Queue
 from eden.db import DBError
 from eden.model import Task
 from eden.data import Backend
+from datetime import datetime, timedelta
+
 try:
     from thread import get_ident
 except ImportError:
@@ -14,7 +17,6 @@ except ImportError:
 LOGGER = logging.getLogger(__name__)
  
 _SHUTDOWNTASK = object()
- 
  
  
 class Scheduler(object):
@@ -36,11 +38,19 @@ class Scheduler(object):
         self._idel_tasks = Queue.Queue()
         self.threadpool = ThreadPool(self, minthreads, maxthreads)
         self.heartbeat = HeartBeat(self._periodic_action, 5)
+        self.clear_time = time.time()
  
     def _periodic_action(self):
-        # Todo: clear timeout task
+        try:
+            if (time.time() - self.clear_time) < 300:
+                when = datetime.now() + timedelta(minutes=5)
+                Backend('task').clear_timeout_task(when)
+                self.clear_time = time.time()
+        except:
+            # Todo: handle db error
+            pass
+            
         idel_queue_size = self._idel_tasks.qsize()
-        LOGGER.info('Idle task size: %d', idel_queue_size)
         for _ in range(idel_queue_size):
             task = self.get()
             self.execute(task, True)
@@ -262,41 +272,3 @@ class WorkerThread(threading.Thread):
                 self.current_task = None
                 self.pool.push(self)
         self.event.clear()
- 
-if __name__ == '__main__':
-    from eden import db
-    from datetime import datetime
-    import urllib2
-    from eden.app import App
- 
-    def get_date(url, session='xxx'):
-        date = None
-        try:
-            r = urllib2.urlopen(url)
-            date = r.info().dict['date']
-        except:
-            LOGGER.info('open failed')
-        LOGGER.info('session: %s, date:%s,', session, date)
- 
-    def setdebug(debug=False):
-        level = logging.DEBUG if debug else logging.INFO
-        logging.basicConfig(level=level,
-                            format='%(asctime)s %(levelname)-8s %(message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S', filemode='a+')
-    setdebug(False)
-    db.setup('localhost', 'test', 'test', 'eden',
-                 pool_opt={'minconn': 3, 'maxconn': 10})
- 
-    app = App()
-    app.add_task('task.test', get_date)
-    scheduler = Scheduler(app, 20, 20, 100)
- 
-    db.execute('delete from cron')
-    for i in range(100):
-        if i % 2 == 0:
-            print i
-            action = 'task.not_found'
-        else:
-            action = 'task.test'
-        scheduler.add_task('name_%d' %(i), 'every 2', action, datetime.now(), 'http://www.baidu.com', session=i)
-    scheduler.run()

@@ -15,6 +15,8 @@ from eden.util import json_encode
 
 LOGGER = logging.getLogger('eden.tool')
 
+COOKIE_SECRET  = 'cookie_secret'
+
 
 __all__ = ['jsonify', 'set_secure_cookie', 'get_secure_cookie']
 
@@ -85,14 +87,13 @@ def get_secure_cookie(name, value=None, max_age_days=31):
         value = request.cookie.get(name)
         if value:
             value = value.value
-    return decode_signed_value("cookie_secret", name, value, max_age_days=max_age_days)
+    return decode_signed_value(COOKIE_SECRET, name, value, max_age_days=max_age_days)
 
 
 def create_signed_value(name, value):
-    secret = "cookie_secret"
     timestamp = str(int(time.time()))
     value = base64.b64encode(value)
-    signature = _secert_signature(secret, name, value, timestamp)
+    signature = _secert_signature(COOKIE_SECRET, name, value, timestamp)
     value = "|".join([value, timestamp, signature])
     return value
 

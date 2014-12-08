@@ -21,6 +21,9 @@ class TaskMapper(object):
         tasks = db.query('SELECT * FROM cron WHERE  task_id=%s', (task_id,))
         return [self._load(task) for task in tasks]
 
+    def clear_timeout_task(self, when):
+        db.execute('UPDATE cron set task_id=NULL, status=%s WHERE task_id IS NOT NULL AND next_run<%s', (Task.SCHEDULED, when))
+
     def take(self, name, status=0, page=1, perpage=10):
         select  = 'SELECT * FROM cron'
         where = []
