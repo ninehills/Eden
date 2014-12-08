@@ -3,7 +3,7 @@
 
 class Paginator(object):
 
-    def __init__(self, results, total, page, perpage, url):
+    def __init__(self, results, total, page, perpage, url, gule='?page='):
         self.results = results
         self.total = total
         self.page = page
@@ -14,13 +14,14 @@ class Paginator(object):
         self.perpage = perpage
         self.url = url
         self._index = 0
+        self.gule = gule
 
     def next_link(self, text=None, default=''):
         text = text or self.text
         pages = (self.total / self.perpage) + 1
         if self.page < pages:
             page = self.page + 1
-            return '<a href="' + self.url + '?page=' + str(page) + '">' + text + '</a>'
+            return '<a href="' + self.url + self.gule + str(page) + '">' + text + '</a>'
 
         return default
 
@@ -28,7 +29,7 @@ class Paginator(object):
         text = text or self.prev
         if self.page > 1:
             page = self.page - 1
-            return '<a href="' + self.url + '?page=' + str(page) + '">' + text + '</a>'
+            return '<a href="' + self.url + self.gule + str(page) + '">' + text + '</a>'
 
         return default
 
@@ -40,7 +41,7 @@ class Paginator(object):
             if self.page > 1:
                 page = self.page - 1
                 html += '<a href="' + self.url + '">' + self.first + '</a>' + \
-                    '<a href="' + self.url + '?page=' + str(page) + '">' + self.prev + '</a>'
+                    '<a href="' + self.url + self.gule + str(page) + '">' + self.prev + '</a>'
             for i in range(self.page - ranged, self.page + ranged):
                 if i < 0:
                     continue
@@ -51,13 +52,13 @@ class Paginator(object):
                 if page == self.page:
                     html += '<strong id="current-page">' + str(page) + '</strong>'
                 else:
-                    html += '<a href="' + self.url + '?page=' + str(page) + '">' + str(page) + '</a>'
+                    html += '<a href="' + self.url + self.gule + str(page) + '">' + str(page) + '</a>'
 
             if self.page < pages:
                 page = self.page + 1
 
-                html += '<a href="' + self.url + '?page=' + str(page) + '">' + self.next + '</a> <a href="' + \
-                    self.url + '?page=' + str(pages) + '">' + self.last + '</a>'
+                html += '<a href="' + self.url + self.gule + str(page) + '">' + self.next + '</a> <a href="' + \
+                    self.url + self.gule + str(pages) + '">' + self.last + '</a>'
 
         return html
 

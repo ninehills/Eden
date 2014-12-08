@@ -74,22 +74,6 @@
 }
 
 
-.task {
-	margin: 2px;
-	height: 30px;
-	width: 760px;
-	float: left;
-	margin-bottom: 5px;
-	/*border-top: 1px solid #C0C0C0;*/
-	border-bottom: 1px solid #C0C0C0;
-}
-
-.task div {
-	padding-top: 5px;
-	text-align: center;
-	display: inline-block;
-}
-
 #task-search {
 
 	height: 60px;
@@ -103,14 +87,14 @@
 }
 
 #task-search input[type=text], input[type=password], input[type=email] {
-	height: 32px;
+	height: 33px;
 	width: 200px;
 }
 
 
 #task-submit  {
 	margin-top: 2px; 
-	height: 32px;
+	height: 33px;
 }
 
 
