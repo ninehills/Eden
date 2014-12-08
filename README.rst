@@ -31,7 +31,7 @@ Firstly download or fetch it form github then run the command in shell:
 
 .. code-block:: bash
 
-    cd Leaf # the path to the project
+    cd Eden # the path to the project
     python setup.py install
 
 .. note:: Make sure you had installed ``MySQLdb`` (``MySQL-python``), ``cherrypy``, ``mako`` before install the module
