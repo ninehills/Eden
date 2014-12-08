@@ -10,7 +10,7 @@ Supports
 #. multi-threaded task execution (Leader/Follower variant)
 #. scheduled event at a certain time or periodic execution like a crontab
 #. attempting tasks that fail
-#. A  threadasfe DB Api, and supports master/slave mode 
+#. A  thread-safe DB Api, and supports master/slave mode 
 #. A Web Management Tool
 
 .. image:: https://github.com/thomashuang/Eden/blob/master/docs/img/task.png
