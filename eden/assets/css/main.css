@@ -1,4 +1,5 @@
-
+@charset "utf-8";
+/* CSS Document */
 
 body, ul, ol, h1, h2, h3, h4, h5, h6, form, li, p, input, select, legend, textarea, fieldset {
 	margin: 0;
@@ -23,37 +24,37 @@ html {
 	left: 0;
 	z-index: 9999;
 }
-#header-nav {
-	width: 960px;
-	margin: 0 auto;
-	position: relative;
-}
+    #header-nav {
+    	width: 960px;
+    	margin: 0 auto;
+    	position: relative;
+    }
 
-#header-nav  li {
-	padding-left: 20px;
-	
-	width: 60px;
-	display: block;
-	float: left;
-}
+    #header-nav  li {
+    	padding-left: 20px;
+    	
+    	width: 60px;
+    	display: block;
+    	float: left;
+    }
 
-#header-nav ul {
-	padding: 10px;
-	margin-left: 100px;
-	display: block;
-}
-#header-nav  ul a {
-	/*margin-top: 10px;*/
-	width: 60px;
-	font-size: 20px;
-	text-decoration: None;
-    list-style-type: disc;
-	color: white;
-	text-align: center;
-}
-#header-nav a:hover {
-	text-decoration: underline;
-}
+    #header-nav ul {
+    	padding: 10px;
+    	margin-left: 100px;
+    	display: block;
+    }
+    #header-nav  ul a {
+    	/*margin-top: 10px;*/
+    	width: 60px;
+    	font-size: 20px;
+    	text-decoration: None;
+        list-style-type: disc;
+    	color: white;
+    	text-align: center;
+    }
+    #header-nav a:hover {
+    	text-decoration: underline;
+    }
 
 #logout {
     height: 24px;
@@ -153,21 +154,21 @@ margin: 2px 4px;
     clear: both;
 }
 
-.paging a, .paging strong {
-    height: 18px;
-    border: 1px solid #fff;
-    display: inline;
-    margin-left: 10px;
-    padding: 0 4px;
-    line-height: 18px;
-    text-decoration:  none;
-    
-}
+    .paging a, .paging strong {
+        height: 18px;
+        border: 1px solid #fff;
+        display: inline;
+        margin-left: 10px;
+        padding: 0 4px;
+        line-height: 18px;
+        text-decoration:  none;
+        
+    }
 
-.paging a:hover {
-    background-color: #0f820c;
-    color: white;
-}
+    .paging a:hover {
+        background-color: #0f820c;
+        color: white;
+    }
 
 #current-page {
     background-color: #0f820c;
@@ -190,33 +191,32 @@ margin: 2px 4px;
 	clear: both;
 }
 
-#main-footer ul
-{
-	padding: 2px;
-	width:500px;
-	margin:2px auto;
-}
+    #main-footer ul
+    {
+    	padding: 2px;
+    	width:500px;
+    	margin:2px auto;
+    }
 
-#main-footer ul > li {
-	
-	display: inline;
-	padding: 2px;
-	margin: 2px;
-	font-size: 12px;
-}
+    #main-footer ul > li {
+    	
+    	display: inline;
+    	padding: 2px;
+    	margin: 2px;
+    	font-size: 12px;
+    }
 
 
-a.footer-link
-{
+a.footer-link {
 	color: #327DC8;
 	text-decoration: none;
 }
-a.footer-link:link, a.footer-link:visited{
-	
-	text-decoration: none;
-}
+    a.footer-link:link, a.footer-link:visited{
+    	
+    	text-decoration: none;
+    }
 
-a.footer-link:hover{
-	
-	text-decoration: underline;
-}
+    a.footer-link:hover{
+    	
+    	text-decoration: underline;
+    }

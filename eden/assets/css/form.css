@@ -1,5 +1,6 @@
 @charset "utf-8";
 /* CSS Document */
+
 intput[type=email], input[type=text], input[type=password], input[type=url] {
     display: inline-block;
     height: 36px;

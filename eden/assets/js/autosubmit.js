@@ -31,7 +31,6 @@
                         $flash.fadeIn(100).fadeOut(3000);
                         window.location.href = res.url;
                     }
-
                 },
                 error: function(jqXHR, textStatus, errorThrown) 
                 {
@@ -40,6 +39,6 @@
             });
             e.preventDefault();
         });
-    this.submit();
-  }
+        this.submit();
+    }
 })(jQuery);
