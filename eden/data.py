@@ -1,11 +1,12 @@
+#!/usr/bin/env python
 from eden import db
-
 from eden.model import Task, User
 from eden.util import json_decode, json_encode
+from eden.paginator import Paginator
+
 from datetime import datetime
 import uuid
 
-from eden.paginator import Paginator
 
 def gen_task_id():
     return str(uuid.uuid4())

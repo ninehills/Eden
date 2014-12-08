@@ -1,6 +1,9 @@
 <%inherit file="base.html"/>
 <%def name="headIncludes()">
-    <link rel="stylesheet" href="/assets/css/user.css">
+    <title>Add User</title>
+    <link rel="stylesheet" href="/assets/css/flash.css">
+    <script src="/assets/js/jquery-2.1.1.min.js"></script>
+    <script src="/assets/js/autosubmit.js"></script>
 </%def>
 
 
@@ -12,6 +15,7 @@
     <hgroup class="wrap">
         <h1>Add User</h1>
     </hgroup>
+    <div id='flash' style='display:none;'><div class='error'></div></div>
     <form id='user-form' method="post" action='/user/add' novalidate autocomplete="off">
 
             <p>
@@ -48,9 +52,18 @@
                 </select>
             </p>
         <aside>
-            <input  value='Add' class='btn' type ='submit'>
+            <div  class='btn' id='add'>Add</div>
         </aside>
     </form>
+
+        <script>
+        $('#add').on('click', function(e) 
+        {
+            var $form = $('#user-form');
+            $form.autosubmit();
+
+        });
+        </script>
 
 </div>
 

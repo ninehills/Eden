@@ -2,7 +2,6 @@
 {
     $.fn.autosubmit = function() 
     {
-       console.log('autosubmit');
        this.submit(function(e) 
        {
             var form = $(this);

@@ -15,7 +15,7 @@ intput[type=email], input[type=text], input[type=password], input[type=url] {
 }
 intput[type=email]:hover, input[type=text]:hover, input[type=password]:hover, input[type=url]:hover {
     border: 1px solid #0066FF;
-    border-top: ##a0a0a0;
+   /* border-top: #a0a0a0;*/
     box-shadow: inset 0 1px 2px rgba(0.1, 0, 0, 0);
 }
 intput[type=email]:focus, input[type=text]:focus, input[type=password]:focus, input[type=url]:focus {

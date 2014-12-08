@@ -1,13 +1,21 @@
 <%inherit file="base.html"/>
 
+<%def name="headIncludes()">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="/assets/css/flash.css">
+    <script src="/assets/js/jquery-2.1.1.min.js"></script>
+    <script src="/assets/js/autosubmit.js"></script>
+</%def>
+
+
 <%def name="body()">
-<hgroup class="wrap">
-    <h1>Edit User</h1>
-</hgroup>
 
 <div id='wrap'>
 
-
+    <hgroup class="wrap">
+        <h1>Edit User</h1>
+    </hgroup>
+    <div id='flash' style='display:none;'><div class='error'></div></div>
     <form id='user-form' method="post" action='/user/${user.uid}/edit' novalidate autocomplete="off">
 
             <p>
@@ -27,7 +35,11 @@
                 <label>Role:</label>
                 <select name='role' id='role' value='${user.role}'>
                 % for name, value in roles.items():
+                    % if name == user.role:
+                    <option value="${name}" selected>${value}</option>
+                    % else:
                     <option value="${name}">${value}</option>
+                    % endif
                 % endfor
                 </select>
             </p>
@@ -49,9 +61,18 @@
             </p>
 
         <aside>
-            <input  value='Update' class='btn' type ='submit'>
+            <div  class='btn' id='update'>Update</div>
         </aside>
     </form>
+
+        <script>
+        $('#update').on('click', function(e) 
+        {
+            var $form = $('#user-form');
+            $form.autosubmit();
+
+        });
+        </script>
 
 </section>
 

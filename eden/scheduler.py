@@ -38,7 +38,7 @@ class Scheduler(object):
         self.heartbeat = HeartBeat(self._periodic_action, 5)
  
     def _periodic_action(self):
-        #Backend('cron').clear_timtout_task()
+        # Todo: clear timeout task
         idel_queue_size = self._idel_tasks.qsize()
         LOGGER.info('Idle task size: %d', idel_queue_size)
         for _ in range(idel_queue_size):

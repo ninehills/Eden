@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 from functools import wraps
 from cherrypy import request, response, tools, Tool, HTTPRedirect
@@ -45,7 +46,7 @@ def init_user():
         user = Backend('user').find(uid)
         if not user:
             user = _guest
-    except TypeError as e:
+    except TypeError:
         user = _guest
     request.user = user
 
