@@ -52,7 +52,7 @@ class TaskMapperTest(unittest.TestCase):
 
     def test_save_after_retry(self):
         task = Backend('task').find('job_test')
-        task.retry()
+        task.retry('msg')
         Backend('task').save(task)
         task = Backend('task').find('job_test')
         assert task.name == self.task.name

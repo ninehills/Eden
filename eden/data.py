@@ -5,6 +5,8 @@ from eden.util import json_decode, json_encode
 from datetime import datetime
 import uuid
 
+from eden.paginator import Paginator
+
 def gen_task_id():
     return str(uuid.uuid4())
 
@@ -17,6 +19,13 @@ class TaskMapper(object):
             (task_id, Task.RUNNING, age, Task.RUNNING, limit))
         tasks = db.query('SELECT * FROM cron WHERE  task_id=%s', (task_id,))
         return [self._load(task) for task in tasks]
+
+    def take(self, page=1, perpage=10):
+        results = db.query('SELECT * FROM cron LIMIT %s OFFSET %s', (perpage, (page - 1) * perpage))
+        return [self._load(task) for task in results]
+        
+    def count(self):
+        return db.query('SELECT COUNT(cron_id) FROM cron')[0][0]
 
     def find_by_cron_id(self, cron_id):
         res = db.query_one('SELECT * FROM cron WHERE cron_id=%s', (cron_id,))
@@ -84,13 +93,25 @@ class UserMapper(object):
         if data:
             return self._load(data[0])
 
+    def find_by_username(self, username):
+        """Return user by username if find in database otherwise None"""
+        data = db.query(self.SELECT + 'WHERE username=%s', (username,))
+        if data:
+            return self._load(data[0])
+
+    def paginate(self, page=1, perpage=10):
+        count = self.count()
+        results = db.query(self.SELECT + ' ORDER BY created DESC LIMIT %s OFFSET %s', (perpage, (page - 1) * perpage))
+        users = [self._load(user) for user in results]
+        return Paginator(users, count, page, perpage, '/user')
+
     def _load(self, data):
         return self.model(*data)
 
     def save(self, user):
         return db.execute("INSERT INTO users(uid, username, email, real_name, password, status, role, created) \
             VALUES(%s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE \
-            email=VALUES(email), password=VALUES(password), status=VALUES(status), role=VALUES(role)",
+            email=VALUES(email), password=VALUES(password), status=VALUES(status), role=VALUES(role), real_name=VALUES(real_name)",
             (user.uid, user.username, user.email, user.real_name, user.password, user.status, user.role, user.created))
 
     def count(self):
