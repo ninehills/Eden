@@ -1,15 +1,30 @@
-#flash .ok {
-    background:#d8ecd8  no-repeat scroll 10px center;
+
+#flash {
+    margin-bottom: 10px;
 }
 
-#flash .warning {
-    background:#fff483  no-repeat scroll 10px center;
-}
+    #flash .info, #flash .error, #flash .success {
+        padding: 10px 18px;
+        margin-bottom: 20px;
 
-#flash .error {
-    background:#f9c5c1  no-repeat scroll 10px center;
-}
+        font-size: 13px;
+        line-height: 21px;
+        font-weight: 500;
 
-#flash .info {
-    background:#EEEEFF  no-repeat scroll 10px center;
-}
+        border-radius: 5px;
+    }
+
+    #flash .info {
+        color: #fff;
+        background: #578cd9;
+    }
+
+    #flash .error {
+        color: #fff;
+        background: #d34937;
+    }
+
+    #flash .success {
+        color: #fff;
+        background: #64a524;
+    }

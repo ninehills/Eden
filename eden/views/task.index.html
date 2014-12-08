@@ -1,6 +1,7 @@
 <%inherit file="base.html"/>
 
 <%def name="headIncludes()">
+    <title>Task</title>
 	<link rel="stylesheet" href="/assets/css/task.css">
 </%def>
 
@@ -11,10 +12,15 @@
 
 		<nav id='task-search'>
 			<form id='task-search-form'>
-				<input name='name' type='text' placeholder='Task name regex expression' />
+				<input name='name' type='text' placeholder='Task name like expression' value='${name}'/>
 				<select name='status' value='running'>
-					<option value="all">All</option>
-					<option value="ruuning">Running</option>
+                % for s in statuses:
+                  % if s == status:
+                        <option value="${s}" selected>${s.capitalize()}</option>
+                    % else:
+                        <option value="${s}">${s.capitalize()}</option>
+                    % endif 
+                % endfor
 				</select>
 				<input id='task-submit' type='submit' value='Search' class='btn'/>
 			</form>
@@ -26,7 +32,7 @@
 				<ul>
 				% for s in statuses:
 					% if s == status:
-						<a  href='/task/staus/${s}' class='status-current' >${s.capitalize()}</a>
+						<a  href='/task/status/${s}' class='status-current' >${s.capitalize()}</a>
 					% else:
 						<a  href='/task/status/${s}' >${s.capitalize()}</a>
 					% endif
@@ -45,14 +51,19 @@
                	 	<a href="/task/${task.name}/edit">
                 	    <strong>${task.name}</strong>
                     <span>Event: ${task.event}</span>
-                    <em class="highlight">Status: ${task.status}</em>
+                    <em class="highlight">Status: ${key_statuses[str(task.status)]}</em>
                 	</a>
             	</li>
             % endfor
         	</ul>
 
 			% else:
-				<p> Doesn't Find task with status: ${status} </p>
+				<p style='text-align: center; with:100%;margin: 10px;'> Doesn't Find task with status: ${status}
+                % if name:
+                    and name : ${name}
+                % endif
+
+                </p>
 			% endif
 			 <aside class="paging">${tasks.links()}</aside>
 		</div>
