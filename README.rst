@@ -7,7 +7,7 @@ Currently, Eden is A Distributed Scheduler Task System.
 Supports
 ===========
 
-#. Distributed scheduler, You can run many schedulers (Yes! it can on diffrent machhines) at same time.
+#. Distributed scheduler, You can run many schedulers (Yes! it can on diffrent servers) at same time.
 #. Multi-threaded task execution (Leader/Follower variant)
 #. Scheduled event at a certain time or periodic execution like a crontab
 #. Attempting tasks that fail
