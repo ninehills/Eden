@@ -125,9 +125,9 @@ _ParsedSpec = namedtuple('_ParsedSpec', 'minute hour dom month dow')
 
 class Task(object):
 
-    NEW = 0
-    SCHEDULED = 1
-    RETRY = 2
+    NEW = 1
+    SCHEDULED = 2
+    RETRY = 3
     
     RUNNING = 20
     COMPLETED = 21

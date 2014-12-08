@@ -20,12 +20,42 @@ class TaskMapper(object):
         tasks = db.query('SELECT * FROM cron WHERE  task_id=%s', (task_id,))
         return [self._load(task) for task in tasks]
 
-    def take(self, page=1, perpage=10):
-        results = db.query('SELECT * FROM cron LIMIT %s OFFSET %s', (perpage, (page - 1) * perpage))
+    def take(self, name, status=0, page=1, perpage=10):
+        select  = 'SELECT * FROM cron'
+        where = []
+        args = []
+        if status:
+            args.append(status)
+            where.append('status=%s')
+        if name:
+            args.append(name)
+            where.append(' name like %s')
+
+        if where:
+            where = ' WHERE ' + ' AND '.join(where)
+        else:
+            where = ''
+
+        args.extend([perpage, (page - 1) * perpage])
+        results = db.query(select + where + ' LIMIT %s OFFSET %s', args)
         return [self._load(task) for task in results]
         
-    def count(self):
-        return db.query('SELECT COUNT(cron_id) FROM cron')[0][0]
+    def count(self, name, status):
+        select  = 'SELECT COUNT(cron_id) FROM cron'
+        where = []
+        args = []
+        if status:
+            args.append(status)
+            where.append('status=%s')
+        if name:
+            args.append(name)
+            where.append(' name like %s')
+
+        if where:
+            where = ' WHERE ' + ' AND '.join(where)
+        else:
+            where = ''
+        return db.query(select + where , args)[0][0]
 
     def find_by_cron_id(self, cron_id):
         res = db.query_one('SELECT * FROM cron WHERE cron_id=%s', (cron_id,))
