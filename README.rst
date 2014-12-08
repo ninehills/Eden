@@ -10,7 +10,10 @@ Supports
 #. multi-threaded task execution (Leader/Follower variant)
 #. scheduled event at a certain time or periodic execution like a crontab
 #. attempting tasks that fail
+#. A  threadasfe DB Api, and supports master/slave mode 
 #. A Web Management Tool
+
+.. image:: https://github.com/thomashuang/Eden/blob/master/docs/img/task.png
 
 
 How to install
@@ -38,7 +41,7 @@ Fork or download it, then run:
 
 .. code-block:: bash 
 
-    cd Leaf # the path to the project
+    cd Eden # the path to the project
     python setup.py develop
 
 
@@ -67,7 +70,7 @@ if your database has not been created yet, log into your mysql first using:
 How to use
 ==========
 
-Set and Run web Manager
+Set and Run Web Manager
 -------------------------
 
 .. code-block:: python 
@@ -114,7 +117,7 @@ then login the web tool and change your root password.
 
     if you wanna use gevent, please install ``gevent`` firstly, then set ``use_gevent`` to ``True``
 
-set up scheduler
+Set up scheduler
 -------------------
 
 
@@ -160,3 +163,11 @@ Here Is A Demo :
                 action = 'task.test'
             scheduler.add_task('name_%d' %(i), 'every 2', action, datetime.now(), 'https://www.google.com', session=i)
         scheduler.run()
+
+
+
+What will be in future
+=======================
+
+#. Add mongodb supports 
+#. Improve web tool 
