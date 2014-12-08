@@ -223,7 +223,7 @@ class Task(object):
         self.last_run = datetime.now()
         if self.attempts < self.ATTEMPT_LIMIT:
             self.status = self.RETRY
-            self._log(self.RETRY)
+            self._log(self.RETRY, msg)
             self.next_run = datetime.now()
             return True
         else:
@@ -258,8 +258,8 @@ class User(object):
         """If the user load from database, if will intialize the uid and secure password.
         Otherwise will hash encrypt the real password
 
-        arg role enum: the string in ('user', 'editor', 'administrator')
-        arg status enum: the string in ('actived', 'inactive', 'banned')
+        arg role enum: the string in ('user', 'administrator', 'root')
+        arg status enum: the string in ('actived', 'banned')
         arg password fix legnth string: the use sha224 password hash
         """
 
@@ -270,12 +270,12 @@ class User(object):
         self.role = role
         self.created = created or datetime.now()
 
-        if uid:
+        if uid is not None:
             self.uid = uid
-            self.password = password
+            self._password = password
         else:
             self.uid = None
-            self.password = self.secure_password(password)
+            self._password = self.secure_password(password)
 
     def password():
         doc = "The password property."
@@ -295,6 +295,9 @@ class User(object):
     def secure_password(self, password):
         """Encrypt password to sha224 hash"""
         return sha224(password).hexdigest()
+
+    def is_banned(self):
+        return self.status == 'banned'
 
     def as_json(self):
         data = self.__dict__.copy()
