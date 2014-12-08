@@ -17,7 +17,7 @@ setup(
     include_package_data=True,
     package_data = {
               # Non-.py files to distribute as part of each package
-              'eden': ['assets/*','views/*']
+              'eden': ['assets/css/*','assets/js/*', 'views/*']
     },
     install_requires = ['setuptools', 'mako', 'cherrypy', 'MySQL-python'],
     test_suite='unittests',
