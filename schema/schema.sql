@@ -1,7 +1,7 @@
 SET @saved_cs_client = @@character_set_client;
 SET character_set_client = utf8;
 
-
+DROP TABLE IF EXISTS `cron`;
 CREATE TABLE `cron` (
   `cron_id` INT(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'cron id',
   `task_id` VARCHAR(64) DEFAULT NULL COMMENT 'the task id for task claiming',
@@ -30,8 +30,8 @@ CREATE TABLE `users` (
   `real_name` varchar(140) NOT NULL COMMENT 'the nick name or real name',
   `email` VARCHAR(140) NOT NULL COMMENT 'the email for the user',
   `password` CHAR(56) NOT NULL COMMENT 'The sha224 encypted password',
-  `status` enum('actived', 'banned') NOT NULL 'The status of the current user',
-  `role` enum('root', 'administrator','user') NOT NULL 'The role of the current user',
+  `status` enum('actived', 'banned') NOT NULL COMMENT 'The status of the current user',
+  `role` enum('root', 'administrator','user') NOT NULL COMMENT 'The role of the current user',
   `created` DATETIME NOT NULL DEFAULT NOW() COMMENT 'The DATETIME when the user was created.',
 
   PRIMARY KEY (`uid`),
