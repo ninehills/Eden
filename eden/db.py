@@ -219,12 +219,9 @@ class Connection(object):
         }
 
     def connect(self):
-        try:
-            self._close()
-            self._connect = MySQLdb.connect(**self._db_options)
-            self._connect.autocommit(True)
-        except MySQLdb.Error, e:
-            logging.error("Error MySQL on %s", e.args[1])
+        self._close()
+        self._connect = MySQLdb.connect(**self._db_options)
+        self._connect.autocommit(True)
 
     def _close(self):
 
@@ -235,7 +232,10 @@ class Connection(object):
 
     def ensure_connect(self):
         if not self._connect or self._max_idel < (time.time() - self._last_used):
-            self.connect()
+            try:
+                self._connect.ping()
+            except:
+                self.connect()
         self._last_used = time.time()
 
     def pop(self):
