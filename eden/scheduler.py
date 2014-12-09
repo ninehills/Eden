@@ -42,14 +42,15 @@ class Scheduler(object):
  
     def _periodic_action(self):
         try:
-            if (time.time() - self.clear_time) < 300:
-                when = datetime.now() + timedelta(minutes=5)
+            if (time.time() - self.clear_time) > 300:
+                when = datetime.now() - timedelta(minutes=5)
                 Backend('task').clear_timeout_task(when)
                 self.clear_time = time.time()
         except:
             # Todo: handle db error
             pass
-            
+        
+        # clear idle tasks 
         idel_queue_size = self._idel_tasks.qsize()
         for _ in range(idel_queue_size):
             task = self.get()
@@ -213,9 +214,7 @@ class ThreadPool(object):
     def stop(self, timeout=5):
         # Must shut down threads here so the code that calls
         # this method can know when all threads are stopped.
- 
-        #time.sleep(1)
-        endtime = int(time.time() + timeout)
+
         while True:
             time.sleep(1)
             with self._lock:

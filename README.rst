@@ -142,8 +142,11 @@ Here Is A Demo :
     import urllib2
     from eden.app import App
     from eden.scheduler import Scheduler
+    import logging
+    
+    LOGGER = logging.getLogger(__name__)
 
-     if __name__ == '__main__':
+    if __name__ == '__main__':
         def get_date(url, session='xxx'):
             date = None
             try:
